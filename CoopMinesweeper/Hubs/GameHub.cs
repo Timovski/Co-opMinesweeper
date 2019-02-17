@@ -1,4 +1,5 @@
-﻿using Microsoft.AspNetCore.SignalR;
+﻿using CoopMinesweeper.Services;
+using Microsoft.AspNetCore.SignalR;
 using System;
 using System.Threading.Tasks;
 
@@ -6,6 +7,20 @@ namespace CoopMinesweeper.Hubs
 {
     public class GameHub : Hub<IGameClient>
     {
+        private readonly IGameService _gameService;
+
+        public GameHub(IGameService gameService)
+        {
+            _gameService = gameService;
+        }
+
+        public string CreateGame(string hostSignal)
+        {
+            var newGameId = _gameService.CreateGame(Context.ConnectionId, hostSignal);
+            return newGameId;
+        }
+
+
         public async Task SendMessage(string user, string message)
         {
             // await Clients.All.SendAsync("ReceiveMessage", user, message);

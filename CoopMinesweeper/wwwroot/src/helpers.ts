@@ -23,15 +23,15 @@ abstract class Helpers {
     }
 
     public static getMousePosition(canvas: HTMLCanvasElement, e: MouseEvent): MousePosition {
-        let rect: DOMRect = canvas.getBoundingClientRect() as DOMRect;
+        const rect: DOMRect = canvas.getBoundingClientRect() as DOMRect;
         return new MousePosition(e.clientX - rect.left, e.clientY - rect.top);
     }
 
     public static getSurroundingFields(field: Field): Field[] {
-        let surroundingFields: Field[] = [];
+        const surroundingFields: Field[] = [];
 
-        let row: number = field.row;
-        let column: number = field.column;
+        const row: number = field.row;
+        const column: number = field.column;
 
         if (matrix[row - 1]) {
             if (matrix[row - 1][column - 1]) {

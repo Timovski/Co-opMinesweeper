@@ -27,62 +27,62 @@ namespace CoopMinesweeper.Controllers
             await _gameHubContext.Clients.All.ReceiveMessage(message);
         }
 
-        // POST api/game
+        //// POST api/game
+        //[HttpPost]
+        //[Route("[action]")]
+        //public async Task<ActionResult<string>> CreateAsync([FromBody] MyViewModel value)
+        //{
+        //    var newGameId = _gameService.CreateGame(value.Prop1);
+        //    await SendMessage("asdas");
+
+        //    return newGameId;
+        //}
+
+        //// POST api/game
+        //[HttpPost]
+        //[Route("[action]")]
+        //public ActionResult<string> Create([FromBody] MyViewModel value)
+        //{
+        //    var newGameId = _gameService.CreateGame(value.Prop1);
+        //    return newGameId;
+        //}
+
         [HttpPost]
         [Route("[action]")]
-        public async Task<ActionResult<string>> CreateAsync([FromBody] MyViewModel value)
+        public ActionResult<string> GetHostSignal([FromBody] DataModel model)
         {
-            var newGameId = _gameService.CreateGame(value.Prop1);
-            await SendMessage("asdas");
-
+            var newGameId = _gameService.GetHostSignal(model.Value1);
             return newGameId;
         }
 
-        // POST api/game
         [HttpPost]
         [Route("[action]")]
-        public ActionResult<string> Create([FromBody] MyViewModel value)
+        public ActionResult<bool> Join([FromBody] DataModel value)
         {
-            var newGameId = _gameService.CreateGame(value.Prop1);
-            return newGameId;
-        }
-
-        [HttpPost]
-        [Route("[action]")]
-        public ActionResult<string> GetHostSignal([FromBody] MyViewModel value)
-        {
-            var newGameId = _gameService.GetHostSignal(value.Prop1);
-            return newGameId;
-        }
-
-        [HttpPost]
-        [Route("[action]")]
-        public ActionResult<bool> Join([FromBody] MyViewModel value)
-        {
-            _gameService.JoinGame(value.Prop1, value.Prop2);
+            _gameService.JoinGame(value.Value1, value.Value2);
             return true;
         }
 
         [HttpPost]
         [Route("[action]")]
-        public ActionResult<string> Check([FromBody] MyViewModel value)
+        public ActionResult<string> Check([FromBody] DataModel value)
         {
-            var clientSignal = _gameService.CheckPeer(value.Prop1);
+            var clientSignal = _gameService.CheckPeer(value.Value1);
             return clientSignal;
         }
 
         [HttpPost]
         [Route("[action]")]
-        public ActionResult<string> Boo([FromBody] MyViewModel value)
+        public ActionResult<string> Boo([FromBody] DataModel value)
         {
-            var clientSignal = _gameService.CheckPeer(value.Prop1);
+            var clientSignal = _gameService.CheckPeer(value.Value1);
             return clientSignal;
         }
     }
 
-    public class MyViewModel
+    public class DataModel
     {
-        public string Prop1 { get; set; }
-        public string Prop2 { get; set; }
+        public string Value1 { get; set; }
+        public string Value2 { get; set; }
     }
 }

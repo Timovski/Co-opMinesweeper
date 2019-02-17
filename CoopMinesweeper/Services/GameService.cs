@@ -5,7 +5,7 @@ namespace CoopMinesweeper.Services
 {
     public interface IGameService
     {
-        string CreateGame(string signal);
+        string CreateGame(string connectionId, string hostSignal);
         string GetHostSignal(string gameId);
         void JoinGame(string clientSignal, string gameId);
         string CheckPeer(string gameId);
@@ -13,56 +13,23 @@ namespace CoopMinesweeper.Services
 
     public class GameService : IGameService
     {
-        public string CreateGame(string signal)
+        private const string ConnString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
+
+        public string CreateGame(string connectionId, string hostSignal)
         {
             string newGameId;
-
-            const string connString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
-
-            using (var conn = new NpgsqlConnection(connString))
+            using (var conn = new NpgsqlConnection(ConnString))
             {
                 conn.Open();
-
-                // Insert some data
-                //using (var cmd = new NpgsqlCommand())
-                //{
-                //    cmd.Connection = conn;
-                //    cmd.CommandText = "INSERT INTO data (some_field) VALUES (@p)";
-                //    cmd.Parameters.AddWithValue("p", "Hello world");
-                //    cmd.ExecuteNonQuery();
-                //}
-
 
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "CALL create_game(@p, '')";
-                    cmd.Parameters.AddWithValue("p", signal);
+                    cmd.CommandText = "CALL create_game(@p, @p2, '')";
+                    cmd.Parameters.AddWithValue("p", connectionId);
+                    cmd.Parameters.AddWithValue("p2", hostSignal);
                     newGameId = (string)cmd.ExecuteScalar();
                 }
-
-
-
-
-
-
-                // Retrieve all rows
-                //using (var cmd = new NpgsqlCommand("SELECT * FROM public.games", conn))
-                //using (var reader = cmd.ExecuteReader())
-                //{
-                //    while (reader.Read())
-                //    {
-                //        games.Add(new Game
-                //        {
-                //            Id = (long)reader[0],
-                //            GameId = (string)reader[1],
-                //            HostSignal = (string)reader[2],
-                //            ClientSignal = (string)(reader.IsDBNull(3) ? null : reader[3]),
-                //            CreatedAt = (DateTime)reader[4],
-                //            ConnectedAt = (DateTime?)(reader.IsDBNull(5) ? null : reader[5])
-                //        });
-                //    }
-                //}
             }
 
             return newGameId;
