@@ -1,2 +1,5 @@
-debugger;
-let gameStarted2: boolean = false;
+
+HtmlHelper.initHtmlElements();
+Renderer.drawBackground();
+Initializer.initFields();
+HtmlHelper.initEventListeners();

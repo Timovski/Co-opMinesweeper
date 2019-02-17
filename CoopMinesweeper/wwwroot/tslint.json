@@ -2,7 +2,6 @@
     "extends": "tslint:recommended",
     "rules": {
         "no-debugger": false,
-        "prefer-const": false,
         "max-classes-per-file": [
             true,
             10
