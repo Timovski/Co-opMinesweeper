@@ -1,0 +1,18 @@
+{
+  "name": "coop-minesweeper",
+  "version": "0.0.1",
+  "description": "A co-op Minesweeper variant.",
+  "main": "/dist/app.js",
+  "directories": {
+    "dist": "dist"
+  },
+  "scripts": {
+    "start": "tsc -w"
+  },
+  "author": "Stefan Timovski",
+  "license": "The Unlicense",
+  "devDependencies": {
+    "typescript": "^3.2.4",
+    "tslint": "^5.12.1"
+  }
+}

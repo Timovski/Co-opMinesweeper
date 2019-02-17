@@ -1,0 +1,33 @@
+{
+    "extends": "tslint:recommended",
+    "rules": {
+        "no-debugger": false,
+        "prefer-const": false,
+        "max-classes-per-file": [
+            true,
+            10
+        ],
+        "trailing-comma": [
+            true,
+            {
+                "multiline": "never",
+                "singleline": "never"
+            }
+        ],
+        "typedef": [
+            true,
+            "call-signature",
+            "arrow-call-signature",
+            "parameter",
+            "arrow-parameter",
+            "property-declaration",
+            "variable-declaration",
+            "member-variable-declaration",
+            "object-destructuring",
+            "array-destructuring"
+        ],
+        "max-line-length": [
+            false
+        ]
+    }
+}
