@@ -7,7 +7,7 @@ namespace CoopMinesweeper.Services
     {
         string CreateGame(string connectionId, string hostSignal);
         string GetHostSignal(string gameId);
-        void JoinGame(string clientSignal, string gameId);
+        string JoinGame(string clientSignal, string gameId);
         string CheckPeer(string gameId);
     }
 
@@ -54,22 +54,24 @@ namespace CoopMinesweeper.Services
             return hostSignal;
         }
 
-        public void JoinGame(string clientSignal, string gameId)
+        public string JoinGame(string clientSignal, string clientGameId)
         {
             const string connString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
-
+            string connectionId;
             using (var conn = new NpgsqlConnection(connString))
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand("UPDATE public.games SET client_signal = @p, connected_at = @p2 WHERE game_id = @p3", conn))
+                using (var cmd = new NpgsqlCommand("UPDATE public.games SET client_signal = @p, connected_at = @p2 WHERE game_id = @p3 RETURNING signalr_connection_id;", conn))
                 {
                     cmd.Parameters.AddWithValue("p", clientSignal);
                     cmd.Parameters.AddWithValue("p2", DateTime.Now);
-                    cmd.Parameters.AddWithValue("p3", gameId);
-                    cmd.ExecuteNonQuery();
+                    cmd.Parameters.AddWithValue("p3", clientGameId);
+                    connectionId = (string)cmd.ExecuteScalar();
                 }
             }
+
+            return connectionId;
         }
 
         public string CheckPeer(string gameId)

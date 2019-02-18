@@ -22,10 +22,10 @@ namespace CoopMinesweeper.Controllers
             _gameHubContext = gameHubContext;
         }
 
-        public async Task SendMessage(string message)
-        {
-            await _gameHubContext.Clients.All.ReceiveMessage(message);
-        }
+        //public async Task SendMessage(string message)
+        //{
+        //    await _gameHubContext.Clients.All.ReceiveMessage(message);
+        //}
 
         //// POST api/game
         //[HttpPost]
@@ -59,7 +59,8 @@ namespace CoopMinesweeper.Controllers
         [Route("[action]")]
         public ActionResult<bool> Join([FromBody] DataModel value)
         {
-            _gameService.JoinGame(value.Value1, value.Value2);
+            var connectionId = _gameService.JoinGame(value.Value1, value.Value2);
+            _gameHubContext.Clients.Client(connectionId).ReceiveClientSignal(value.Value1);
             return true;
         }
 

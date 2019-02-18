@@ -58,6 +58,6 @@ namespace CoopMinesweeper.Hubs
     public interface IGameClient
     {
         Task ReceiveMessage(string user, string message);
-        Task ReceiveMessage(string message);
+        Task ReceiveClientSignal(string message);
     }
 }

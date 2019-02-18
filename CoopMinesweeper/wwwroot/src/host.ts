@@ -10,11 +10,13 @@ let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/ga
 let hostGameId: string;
 const hostOverlayGameId: HTMLElement = document.getElementById("host-overlay-game-id") as HTMLElement;
 const hostOverlayStatus: HTMLElement = document.getElementById("host-overlay-status") as HTMLElement;
+const hostOverlay: HTMLElement = document.getElementById("host-overlay") as HTMLElement;
 
 hostOverlayStatus.innerText = "Waiting for signal...";
 
 peer.on("error", (err: any): void => {
-    // console.log("error", err);
+    debugger;
+    // todo: implement
 });
 
 peer.on("signal", (data: any): void => {
@@ -31,45 +33,29 @@ peer.on("signal", (data: any): void => {
             hostOverlayGameId.innerText = `Game Id: ${newGameId}`;
             hostOverlayStatus.innerText = "Waiting for other player to join...";
         }).catch((err: any) => {
-            // return console.error(err.toString());
+            // todo: implement
         });
     }).catch((err: any) => {
-        // return console.error(err.toString());
+        // todo: implement
     });
 });
 
 peer.on("connect", (): void => {
-    debugger;
-    // console.log("connect");
+    if (hostOverlay.parentNode) {
+        hostOverlay.parentNode.removeChild(hostOverlay);
+    }
+    signalrConnection.stop();
+    // todo: implement
 });
 
 peer.on("data", (data: any): void => {
-    // if (host) {
-    //     let dataObject: ClientDataObject = JSON.parse(data);
-    //     if (dataObject.mouseEventType === MouseEventType.Move) {
-    //         Renderer.drawMouse(dataObject.mousePosition);
-    //     } else if (dataObject.mouseEventType === MouseEventType.Click) {
-    //         ActionHelper.handleClick(dataObject.mousePosition);
-    //     } else if (dataObject.mouseEventType === MouseEventType.Flag) {
-    //         ActionHelper.HandleFlag(dataObject.mousePosition);
-    //     }
-    // } else {
-    //     let serverDataObject: ServerDataObject = JSON.parse(data);
-    //     if (serverDataObject.serverDataType === ServerDataType.Game) {
-    //         matrix = serverDataObject.gameMatrix as Field[][];
-    //         previousActiveField = matrix[previousActiveField.row][previousActiveField.column];
-    //         Renderer.renderMatrix();
-    //     } else if (serverDataObject.serverDataType === ServerDataType.MouseMove) {
-    //         Renderer.drawMouse(serverDataObject.mousePosition as MousePosition);
-    //     }
-    // }
+    debugger;
+    // todo: implement
 });
 
-// connection.on("ReceiveMessage", (user: any, message: any) => {
-//     debugger;
-//     let a: any = user;
-//     let b: any = message;
-// });
+signalrConnection.on("ReceiveClientSignal", (clientSignal: string) => {
+    peer.signal(clientSignal);
+});
 
 // setTimeout(() => {
 //     debugger;
