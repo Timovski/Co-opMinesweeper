@@ -74,13 +74,3 @@ enum ServerDataType {
     Game,
     MouseMove
 }
-
-class DataModel {
-    public Value1: string | undefined;
-    public Value2: string | undefined;
-
-    constructor(value1?: string, value2?: string) {
-        this.Value1 = value1;
-        this.Value2 = value2;
-    }
-}

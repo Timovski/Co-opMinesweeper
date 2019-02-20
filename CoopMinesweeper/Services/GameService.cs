@@ -1,23 +1,20 @@
 ﻿using Npgsql;
-using System;
 
 namespace CoopMinesweeper.Services
 {
     public interface IGameService
     {
-        string CreateGame(string connectionId, string hostSignal);
-        string GetHostSignal(string gameId);
-        string JoinGame(string clientSignal, string gameId);
-        string CheckPeer(string gameId);
+        string CreateGame(string hostConnectionId);
+        string GetHostConnectionId(string gameId);
     }
 
     public class GameService : IGameService
     {
         private const string ConnString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
 
-        public string CreateGame(string connectionId, string hostSignal)
+        public string CreateGame(string hostConnectionId)
         {
-            string newGameId;
+            string gameId;
             using (var conn = new NpgsqlConnection(ConnString))
             {
                 conn.Open();
@@ -25,72 +22,30 @@ namespace CoopMinesweeper.Services
                 using (var cmd = new NpgsqlCommand())
                 {
                     cmd.Connection = conn;
-                    cmd.CommandText = "CALL create_game(@p, @p2, '')";
-                    cmd.Parameters.AddWithValue("p", connectionId);
-                    cmd.Parameters.AddWithValue("p2", hostSignal);
-                    newGameId = (string)cmd.ExecuteScalar();
+                    cmd.CommandText = "CALL create_game(@p)";
+                    cmd.Parameters.AddWithValue("p", hostConnectionId);
+                    gameId = (string)cmd.ExecuteScalar();
                 }
             }
 
-            return newGameId;
+            return gameId;
         }
 
-        public string GetHostSignal(string gameId)
+        public string GetHostConnectionId(string gameId)
         {
-            string hostSignal;
-            const string connString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
-
-            using (var conn = new NpgsqlConnection(connString))
+            string hostConnectionId;
+            using (var conn = new NpgsqlConnection(ConnString))
             {
                 conn.Open();
 
-                using (var cmd = new NpgsqlCommand("SELECT host_signal FROM public.games AS g WHERE g.game_id = @p", conn))
+                using (var cmd = new NpgsqlCommand("SELECT host_connection_id FROM public.games AS g WHERE g.game_id = @p", conn))
                 {
                     cmd.Parameters.AddWithValue("p", gameId);
-                    hostSignal = (string)cmd.ExecuteScalar();
+                    hostConnectionId = (string)cmd.ExecuteScalar();
                 }
             }
 
-            return hostSignal;
-        }
-
-        public string JoinGame(string clientSignal, string clientGameId)
-        {
-            const string connString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
-            string connectionId;
-            using (var conn = new NpgsqlConnection(connString))
-            {
-                conn.Open();
-
-                using (var cmd = new NpgsqlCommand("UPDATE public.games SET client_signal = @p, connected_at = @p2 WHERE game_id = @p3 RETURNING signalr_connection_id;", conn))
-                {
-                    cmd.Parameters.AddWithValue("p", clientSignal);
-                    cmd.Parameters.AddWithValue("p2", DateTime.Now);
-                    cmd.Parameters.AddWithValue("p3", clientGameId);
-                    connectionId = (string)cmd.ExecuteScalar();
-                }
-            }
-
-            return connectionId;
-        }
-
-        public string CheckPeer(string gameId)
-        {
-            string clientSignal;
-            const string connString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
-
-            using (var conn = new NpgsqlConnection(connString))
-            {
-                conn.Open();
-
-                using (var cmd = new NpgsqlCommand("SELECT client_signal FROM public.games AS g WHERE g.game_id = @p", conn))
-                {
-                    cmd.Parameters.AddWithValue("p", gameId);
-                    clientSignal = (string)cmd.ExecuteScalar();
-                }
-            }
-
-            return clientSignal;
+            return hostConnectionId;
         }
     }
 }

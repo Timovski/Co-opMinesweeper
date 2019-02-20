@@ -28,7 +28,11 @@ namespace CoopMinesweeper
         public void ConfigureServices(IServiceCollection services)
         {
             services.AddMvc().SetCompatibilityVersion(CompatibilityVersion.Version_2_2);
-            services.AddSignalR();
+            services.AddSignalR().AddHubOptions<GameHub>(options =>
+            {
+                options.ClientTimeoutInterval = TimeSpan.FromSeconds(300);
+                options.KeepAliveInterval = TimeSpan.FromSeconds(150);
+            });
 
             services.AddTransient<IGameService, GameService>();
         }

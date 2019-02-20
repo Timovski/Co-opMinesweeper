@@ -1,6 +1,5 @@
 ﻿using CoopMinesweeper.Services;
 using Microsoft.AspNetCore.SignalR;
-using System;
 using System.Threading.Tasks;
 
 namespace CoopMinesweeper.Hubs
@@ -14,50 +13,33 @@ namespace CoopMinesweeper.Hubs
             _gameService = gameService;
         }
 
-        public string CreateGame(string hostSignal)
+        public string CreateGame()
         {
-            var newGameId = _gameService.CreateGame(Context.ConnectionId, hostSignal);
-            return newGameId;
+            var gameId = _gameService.CreateGame(Context.ConnectionId);
+            return gameId;
         }
 
-
-        public async Task SendMessage(string user, string message)
+        public void GetHostSignal(string gameId)
         {
-            // await Clients.All.SendAsync("ReceiveMessage", user, message);
-            await Clients.Caller.ReceiveMessage(user, message);
-            //await Clients.Client("").ReceiveMessage(user, message);
-
-            //string name = Context.User.Identity.Name;
-
-            //foreach (var connectionId in _connections.GetConnections(who))
-            //{
-            //    Clients.Client(connectionId).addChatMessage(name + ": " + message);
-            //}
-            var a = Context.ConnectionId;
-            var b = Context.User;
-            var c = Context.UserIdentifier;
+            var hostConnectionId = _gameService.GetHostConnectionId(gameId);
+            Clients.Client(hostConnectionId).HostSignalPrompt(Context.ConnectionId);
         }
 
-        public override Task OnConnectedAsync()
+        public void ReceiveHostSignal(string clientConnectionId, string hostSignal)
         {
-            var a = Context.ConnectionId;
-            var b = Context.User;
-            var c = Context.UserIdentifier;
-            return base.OnConnectedAsync();
+            Clients.Client(clientConnectionId).ClientSignalPrompt(Context.ConnectionId, hostSignal);
         }
 
-        public override Task OnDisconnectedAsync(Exception exception)
+        public void ReceiveClientSignal(string hostConnectionId, string clientSignal)
         {
-            var a = Context.ConnectionId;
-            var b = Context.User;
-            var c = Context.UserIdentifier;
-            return base.OnDisconnectedAsync(exception);
+            Clients.Client(hostConnectionId).ConnectWithClient(clientSignal);
         }
     }
 
     public interface IGameClient
     {
-        Task ReceiveMessage(string user, string message);
-        Task ReceiveClientSignal(string message);
+        Task HostSignalPrompt(string clientConnectionId);
+        Task ClientSignalPrompt(string hostConnectionId, string hostSignal);
+        Task ConnectWithClient(string clientSignal);
     }
 }

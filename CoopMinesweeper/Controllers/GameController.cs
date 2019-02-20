@@ -47,38 +47,38 @@ namespace CoopMinesweeper.Controllers
         //    return newGameId;
         //}
 
-        [HttpPost]
-        [Route("[action]")]
-        public ActionResult<string> GetHostSignal([FromBody] DataModel model)
-        {
-            var newGameId = _gameService.GetHostSignal(model.Value1);
-            return newGameId;
-        }
+        //[HttpPost]
+        //[Route("[action]")]
+        //public ActionResult<string> GetHostSignal([FromBody] DataModel model)
+        //{
+        //    var newGameId = _gameService.GetHostSignal(model.Value1);
+        //    return newGameId;
+        //}
 
-        [HttpPost]
-        [Route("[action]")]
-        public ActionResult<bool> Join([FromBody] DataModel value)
-        {
-            var connectionId = _gameService.JoinGame(value.Value1, value.Value2);
-            _gameHubContext.Clients.Client(connectionId).ReceiveClientSignal(value.Value1);
-            return true;
-        }
+        //[HttpPost]
+        //[Route("[action]")]
+        //public ActionResult<bool> Join([FromBody] DataModel value)
+        //{
+        //    var connectionId = _gameService.JoinGame(value.Value1, value.Value2);
+        //    _gameHubContext.Clients.Client(connectionId).ReceiveClientSignal(value.Value1);
+        //    return true;
+        //}
 
-        [HttpPost]
-        [Route("[action]")]
-        public ActionResult<string> Check([FromBody] DataModel value)
-        {
-            var clientSignal = _gameService.CheckPeer(value.Value1);
-            return clientSignal;
-        }
+        //[HttpPost]
+        //[Route("[action]")]
+        //public ActionResult<string> Check([FromBody] DataModel value)
+        //{
+        //    var clientSignal = _gameService.CheckPeer(value.Value1);
+        //    return clientSignal;
+        //}
 
-        [HttpPost]
-        [Route("[action]")]
-        public ActionResult<string> Boo([FromBody] DataModel value)
-        {
-            var clientSignal = _gameService.CheckPeer(value.Value1);
-            return clientSignal;
-        }
+        //[HttpPost]
+        //[Route("[action]")]
+        //public ActionResult<string> Boo([FromBody] DataModel value)
+        //{
+        //    var clientSignal = _gameService.CheckPeer(value.Value1);
+        //    return clientSignal;
+        //}
     }
 
     public class DataModel
