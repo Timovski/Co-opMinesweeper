@@ -2,11 +2,10 @@
 HtmlHelper.initHtmlElements();
 Renderer.drawBackground();
 Initializer.initFields();
-HtmlHelper.initEventListeners();
 
 const clientOverlayStatus: HTMLElement = document.getElementById("client-overlay-status") as HTMLElement;
-const clientGameIdInput: HTMLInputElement = document.getElementById("client-game-id-input") as HTMLInputElement;
-const connectGameElement: HTMLElement = document.getElementById("connect-game") as HTMLElement;
+const gameIdInput: HTMLInputElement = document.getElementById("game-id-input") as HTMLInputElement;
+const connectButton: HTMLElement = document.getElementById("connect-button") as HTMLElement;
 const clientOverlay: HTMLElement = document.getElementById("client-overlay") as HTMLElement;
 
 let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false });
@@ -27,21 +26,23 @@ clientSignalrConnection.start().then(() => {
 });
 
 let getHostSignal: () => void = (): void => {
-    clientGameId = clientGameIdInput.value;
+    clientGameId = gameIdInput.value;
     if (connected) {
         clientSignalrConnection.invoke("GetHostSignal", clientGameId).catch((err: any) => {
             // todo: implement
         });
+    } else {
+        // todo: implement
     }
 };
 
-clientSignalrConnection.on("ClientSignalPrompt", (connectionId: string, hostSignal: string) => {
-    hostConnectionId = connectionId;
+clientSignalrConnection.on("ClientSignalPrompt", (hostConnId: string, hostSignal: string) => {
+    hostConnectionId = hostConnId;
     clientPeer.signal(hostSignal);
 });
 
-clientGameIdInput.addEventListener("keyup", (event: KeyboardEvent) => { if (event.keyCode === 13) { getHostSignal(); } });
-connectGameElement.addEventListener("click", getHostSignal);
+gameIdInput.addEventListener("keyup", (event: KeyboardEvent) => { if (event.keyCode === 13) { getHostSignal(); } });
+connectButton.addEventListener("click", getHostSignal);
 
 clientPeer.on("error", (err: any): void => {
     // todo: implement
@@ -71,6 +72,31 @@ clientPeer.on("connect", (): void => {
 });
 
 clientPeer.on("data", (data: any): void => {
-    // todo: implement
-    debugger;
+    const serverDataObject: ServerDataObject = JSON.parse(data);
+    if (serverDataObject.serverDataType === ServerDataType.MouseMove) {
+        Renderer.drawMouse(serverDataObject.mousePosition);
+    } else if (serverDataObject.serverDataType === ServerDataType.Game) {
+        // matrix = serverDataObject.gameMatrix as Field[][];
+        // previousActiveField = matrix[previousActiveField.row][previousActiveField.column];
+        // Renderer.renderMatrix();
+    }
+});
+
+mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
+    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    clientPeer.send(JSON.stringify(new ClientDataObject(mousePosition, MouseEventType.Move)));
+
+    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    Renderer.renderMouseMove(field);
+});
+
+mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
+    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    clientPeer.send(JSON.stringify(new ClientDataObject(mousePosition, MouseEventType.Click)));
+});
+
+mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
+    e.preventDefault();
+    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    clientPeer.send(JSON.stringify(new ClientDataObject(mousePosition, MouseEventType.Flag)));
 });

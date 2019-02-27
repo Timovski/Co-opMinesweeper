@@ -60,17 +60,22 @@ enum MouseEventType {
 
 class ServerDataObject {
     public gameMatrix: Field[][] | undefined;
-    public mousePosition: MousePosition | undefined;
-    public serverDataType: ServerDataType | undefined;
+    public mousePosition!: MousePosition;
+    public serverDataType!: ServerDataType;
 
-    constructor(gameMatrix?: Field[][], mousePosition?: MousePosition, serverDataType?: ServerDataType) {
-        this.gameMatrix = gameMatrix;
-        this.mousePosition = mousePosition;
+    constructor(mousePosition: MousePosition, serverDataType: ServerDataType)
+    constructor(gameMatrix: Field[][], serverDataType: ServerDataType)
+    constructor(arg: MousePosition | Field[][], serverDataType: ServerDataType) {
+        if (arg instanceof MousePosition) {
+            this.mousePosition = arg;
+        } else {
+            this.gameMatrix = arg;
+        }
         this.serverDataType = serverDataType;
     }
 }
 
 enum ServerDataType {
-    Game,
-    MouseMove
+    MouseMove,
+    Game
 }

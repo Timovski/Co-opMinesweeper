@@ -2,7 +2,6 @@
 HtmlHelper.initHtmlElements();
 Renderer.drawBackground();
 Initializer.initFields();
-HtmlHelper.initEventListeners();
 
 const hostOverlayGameId: HTMLElement = document.getElementById("host-overlay-game-id") as HTMLElement;
 const hostOverlayStatus: HTMLElement = document.getElementById("host-overlay-status") as HTMLElement;
@@ -51,16 +50,41 @@ peer.on("connect", (): void => {
 });
 
 peer.on("data", (data: any): void => {
-    debugger;
-    // todo: implement
-});
-
-signalrConnection.on("ConnectWithClient", (clientSignal: string) => {
-    peer.signal(clientSignal);
+    const dataObject: ClientDataObject = JSON.parse(data);
+    if (dataObject.mouseEventType === MouseEventType.Move) {
+        Renderer.drawMouse(dataObject.mousePosition);
+    } else if (dataObject.mouseEventType === MouseEventType.Click) {
+        ActionHelper.handleClick(dataObject.mousePosition);
+    } else if (dataObject.mouseEventType === MouseEventType.Flag) {
+        ActionHelper.HandleFlag(dataObject.mousePosition);
+    }
 });
 
 signalrConnection.on("HostSignalPrompt", (clientConnectionId: string) => {
     signalrConnection.invoke("ReceiveHostSignal", clientConnectionId, hostSignal).catch((err: any) => {
         // todo: implement
     });
+});
+
+signalrConnection.on("ConnectWithClient", (clientSignal: string) => {
+    peer.signal(clientSignal);
+});
+
+mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
+    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+
+    Renderer.renderMouseMove(field);
+    peer.send(JSON.stringify(new ServerDataObject(mousePosition, ServerDataType.MouseMove)));
+});
+
+mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
+    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    ActionHelper.handleClick(mousePosition);
+});
+
+mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
+    e.preventDefault();
+    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    ActionHelper.HandleFlag(mousePosition);
 });
