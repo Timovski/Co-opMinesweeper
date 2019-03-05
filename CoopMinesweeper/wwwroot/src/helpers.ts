@@ -37,9 +37,9 @@ abstract class Helpers {
             if (matrix[row - 1][column - 1]) {
                 surroundingFields.push(matrix[row - 1][column - 1]);
             }
-            if (matrix[row - 1][column]) {
-                surroundingFields.push(matrix[row - 1][column]);
-            }
+
+            surroundingFields.push(matrix[row - 1][column]);
+
             if (matrix[row - 1][column + 1]) {
                 surroundingFields.push(matrix[row - 1][column + 1]);
             }
@@ -56,11 +56,72 @@ abstract class Helpers {
             if (matrix[row + 1][column - 1]) {
                 surroundingFields.push(matrix[row + 1][column - 1]);
             }
-            if (matrix[row + 1][column]) {
-                surroundingFields.push(matrix[row + 1][column]);
-            }
+
+            surroundingFields.push(matrix[row + 1][column]);
+
             if (matrix[row + 1][column + 1]) {
                 surroundingFields.push(matrix[row + 1][column + 1]);
+            }
+        }
+
+        return surroundingFields;
+    }
+
+    public static getSurroundingFieldsForReveal(field: Field): Field[] {
+        const surroundingFields: Field[] = [];
+
+        const row: number = field.row;
+        const column: number = field.column;
+
+        if (matrix[row - 1]) {
+            const topLeft: Field = matrix[row - 1][column - 1];
+            if (topLeft && !topLeft.revealed && !topLeft.flag) {
+                topLeft.revealed = true;
+                surroundingFields.push(topLeft);
+            }
+
+            const topCenter: Field = matrix[row - 1][column];
+            if (!topCenter.revealed && !topCenter.flag) {
+                topCenter.revealed = true;
+                surroundingFields.push(topCenter);
+            }
+
+            const topRight: Field = matrix[row - 1][column];
+            if (topRight && !topRight.revealed && !topRight.flag) {
+                topRight.revealed = true;
+                surroundingFields.push(topRight);
+            }
+        }
+
+        const left: Field = matrix[row][column - 1];
+        if (left && !left.revealed && !left.flag) {
+            left.revealed = true;
+            surroundingFields.push(left);
+        }
+
+        const right: Field = matrix[row][column + 1];
+        if (right && !right.revealed && !right.flag) {
+            right.revealed = true;
+            surroundingFields.push(right);
+        }
+
+        if (matrix[row + 1]) {
+            const bottomLeft: Field = matrix[row + 1][column - 1];
+            if (bottomLeft && !bottomLeft.revealed && !bottomLeft.flag) {
+                bottomLeft.revealed = true;
+                surroundingFields.push(bottomLeft);
+            }
+
+            const bottomCenter: Field = matrix[row + 1][column];
+            if (!bottomCenter.revealed && !bottomCenter.flag) {
+                bottomCenter.revealed = true;
+                surroundingFields.push(bottomCenter);
+            }
+
+            const bottomRight: Field = matrix[row + 1][column + 1];
+            if (bottomRight && !bottomRight.revealed && !bottomRight.flag) {
+                bottomRight.revealed = true;
+                surroundingFields.push(bottomRight);
             }
         }
 

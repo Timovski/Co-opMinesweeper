@@ -1,4 +1,3 @@
-
 HtmlHelper.initHtmlElements();
 Renderer.drawBackground();
 Initializer.initFields();
@@ -76,9 +75,18 @@ clientPeer.on("data", (data: any): void => {
     if (serverDataObject.serverDataType === ServerDataType.MouseMove) {
         Renderer.drawMouse(serverDataObject.mousePosition);
     } else if (serverDataObject.serverDataType === ServerDataType.Game) {
-        // matrix = serverDataObject.gameMatrix as Field[][];
-        // previousActiveField = matrix[previousActiveField.row][previousActiveField.column];
-        // Renderer.renderMatrix();
+        for (let i: number = 0, len: number = serverDataObject.affectedFields.length; i < len; i++) {
+            const field: Field = serverDataObject.affectedFields[i];
+
+            // todo: This should happen for client only
+            matrix[field.row][field.column] = field;
+
+            // todo: Think of a better solution for this problem
+            if (previousActiveField && previousActiveField.row === field.row && previousActiveField.column === field.column) {
+                previousActiveField = field;
+            }
+        }
+        Renderer.drawAffectedFields(serverDataObject.affectedFields);
     }
 });
 
@@ -92,11 +100,23 @@ mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
 
 mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+
+    if (field.revealed || field.flag) {
+        return;
+    }
+
     clientPeer.send(JSON.stringify(new ClientDataObject(mousePosition, MouseEventType.Click)));
 });
 
 mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     e.preventDefault();
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+
+    if (field.revealed) {
+        return;
+    }
+
     clientPeer.send(JSON.stringify(new ClientDataObject(mousePosition, MouseEventType.Flag)));
 });

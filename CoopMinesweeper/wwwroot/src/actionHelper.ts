@@ -1,37 +1,28 @@
 abstract class ActionHelper {
-    public static handleClick(mousePosition: MousePosition): void {
-        const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
-        // if (!gameStarted) {
-        //     gameStarted = true;
+    public static handleClick(field: Field): Field[] {
+        if (!gameStarted) {
+            gameStarted = true;
 
-        //     Initializer.markStartingFields(field);
-        //     Initializer.createBombs();
-        //     Initializer.createNumbers();
-        // }
-
-        if (field.revealed || field.flag) {
-            return;
+            Initializer.markStartingFields(field);
+            Initializer.createBombs();
+            Initializer.createNumbers();
         }
 
-        // Renderer.revealField(field);
+        if (field.revealed || field.flag) {
+            return [];
+        }
 
-        // ConnectionHelper.sendGameData();
+        const affectedFields: Field[] = [];
+        Renderer.revealField(field, affectedFields);
+        return affectedFields;
     }
 
-    public static HandleFlag(mousePosition: MousePosition): void {
-        const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
-
+    public static HandleFlag(field: Field): Field[] {
         if (field.revealed) {
-            return;
+            return [];
         }
 
         field.flag = !field.flag;
-        if (field.flag) {
-            Renderer.fillField(field, "#001AFF");
-        } else {
-            Renderer.fillField(field, "#FFFFFF");
-        }
-
-        // ConnectionHelper.sendGameData();
+        return [field];
     }
 }

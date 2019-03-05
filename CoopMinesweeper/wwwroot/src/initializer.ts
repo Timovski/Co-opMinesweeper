@@ -1,3 +1,4 @@
+// todo: This should be probably moved to host only
 abstract class Initializer {
     public static initFields(): void {
         let y: number = 2;
@@ -13,55 +14,63 @@ abstract class Initializer {
         }
     }
 
-    // public static markStartingFields(field: Field): void {
-    //     field.type = FieldType.NoBomb;
+    public static markStartingFields(field: Field): void {
+        field.type = FieldType.NoBomb;
 
-    //     let surroundingFields: Field[] = Helpers.getSurroundingFields(field);
-    //     surroundingFields.forEach((x: Field) => {
-    //         x.type = FieldType.NoBomb;
-    //     });
-    // }
+        const surroundingFields: Field[] = Helpers.getSurroundingFields(field);
+        for (let i: number = 0, len: number = surroundingFields.length; i < len; i++) {
+            surroundingFields[i].type = FieldType.NoBomb;
+        }
+    }
 
-    // public static createBombs(): void {
-    //     let numberOfBombs: number = 0;
-    //     while (numberOfBombs < 10) {
-    //         let row: number = Helpers.getRandomInt(0, 8);
-    //         let column: number = Helpers.getRandomInt(0, 8);
+    // todo: Optimize this
+    public static createBombs(): void {
+        let numberOfBombs: number = 0;
+        let row: number;
+        let column: number;
 
-    //         if (matrix[row][column].type === FieldType.Bomb) {
-    //             continue;
-    //         }
+        while (numberOfBombs < 99) {
+            row = Helpers.getRandomInt(0, 15);
+            column = Helpers.getRandomInt(0, 29);
 
-    //         if (matrix[row][column].type === FieldType.NoBomb) {
-    //             continue;
-    //         }
+            if (matrix[row][column].type === FieldType.Bomb) {
+                continue;
+            }
 
-    //         matrix[row][column].type = FieldType.Bomb;
-    //         numberOfBombs++;
-    //     }
-    // }
+            if (matrix[row][column].type === FieldType.NoBomb) {
+                continue;
+            }
 
-    // public static createNumbers(): void {
-    //     for (let row: number = 0; row < 9; row++) {
-    //         for (let column: number = 0; column < 9; column++) {
-    //             let field: Field = matrix[row][column];
+            matrix[row][column].type = FieldType.Bomb;
+            numberOfBombs++;
+        }
+    }
 
-    //             if (field.type === FieldType.Bomb) {
-    //                 continue;
-    //             }
+    public static createNumbers(): void {
+        let field: Field;
+        let bombs: number;
+        let surroundingFields: Field[];
 
-    //             let surroundingFields: Field[] = Helpers.getSurroundingFields(field);
-    //             let bombs: number = surroundingFields.reduce((accumulator: number, currentField: Field) => {
-    //                 return accumulator + (currentField.type === FieldType.Bomb ? 1 : 0);
-    //             }, 0);
+        for (let row: number = 0; row < 16; row++) {
+            for (let column: number = 0; column < 30; column++) {
+                field = matrix[row][column];
 
-    //             if (bombs === 0) {
-    //                 field.type = FieldType.Empty;
-    //             } else {
-    //                 field.type = FieldType.Number;
-    //                 field.number = bombs;
-    //             }
-    //         }
-    //     }
-    // }
+                if (field.type === FieldType.Bomb) {
+                    continue;
+                }
+
+                surroundingFields = Helpers.getSurroundingFields(field);
+                bombs = surroundingFields.reduce((accumulator: number, currentField: Field) => {
+                    return accumulator + (currentField.type === FieldType.Bomb ? 1 : 0);
+                }, 0);
+
+                if (bombs === 0) {
+                    field.type = FieldType.Empty;
+                } else {
+                    field.type = FieldType.Number;
+                    field.number = bombs;
+                }
+            }
+        }
+    }
 }

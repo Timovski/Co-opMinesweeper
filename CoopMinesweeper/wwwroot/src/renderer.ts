@@ -42,71 +42,54 @@ abstract class Renderer {
         Renderer.fillField(field, "#787878");
     }
 
-    // public static revealField(field: Field): void {
-    //     if (field.shown) {
-    //         return;
-    //     }
+    // todo: Definitely move this method in some other helper for the client only
+    public static drawAffectedFields(affectedFields: Field[]): void {
+        for (let i: number = 0, len: number = affectedFields.length; i < len; i++) {
+            const field: Field = affectedFields[i];
 
-    //     field.shown = true;
+            // Reset field
+            Renderer.fillField(field, "#FFFFFF");
 
-    //     if (field.type === FieldType.Bomb) {
-    //         gameCanvasContext.fillStyle = "#ff0000";
-    //         gameCanvasContext.fillRect(field.startX, field.startY, 50, 50);
-    //     } else if (field.type === FieldType.Number) {
-    //         gameCanvasContext.fillStyle = "#FFFFFF";
-    //         gameCanvasContext.fillRect(field.startX, field.startY, 50, 50);
+            if (field.flag) {
+                Renderer.fillField(field, "#001AFF");
+                continue;
+            }
 
-    //         gameCanvasContext.fillStyle = "#000000";
-    //         gameCanvasContext.font = "30px Georgia";
-    //         gameCanvasContext.fillText(`${field.number}`, field.startX + 15, field.startY + 32);
-    //     } else {
-    //         gameCanvasContext.fillStyle = "#36ff00";
-    //         gameCanvasContext.fillRect(field.startX, field.startY, 50, 50);
-    //         Renderer.revealSurroundingFields(field);
-    //     }
-    // }
+            if (!field.revealed) {
+                continue;
+            }
 
-    // public static renderMatrix(): void {
-    //     for (let row: number = 0; row < 9; row++) {
-    //         for (let column: number = 0; column < 9; column++) {
-    //             let field: Field = matrix[row][column];
+            if (field.type === FieldType.Bomb) {
+                gameCanvasContext.fillStyle = "#ff0000";
+                gameCanvasContext.fillRect(field.startX, field.startY, 30, 30);
+            } else if (field.type === FieldType.Number) {
+                gameCanvasContext.fillStyle = "#FFFFFF";
+                gameCanvasContext.fillRect(field.startX, field.startY, 30, 30);
 
-    //             // Reset field
-    //             Renderer.fillField(field, "#FFFFFF");
+                gameCanvasContext.fillStyle = "#000000";
+                gameCanvasContext.font = "20px Georgia";
+                gameCanvasContext.fillText(`${field.number}`, field.startX + 10, field.startY + 20);
+            } else {
+                gameCanvasContext.fillStyle = "#36ff00";
+                gameCanvasContext.fillRect(field.startX, field.startY, 30, 30);
+            }
+        }
+    }
 
-    //             if (field.flag) {
-    //                 Renderer.fillField(field, "#001AFF");
-    //                 continue;
-    //             }
+    public static revealField(field: Field, allFields: Field[]): void {
+        field.revealed = true;
+        allFields.push(field);
 
-    //             if (!field.shown) {
-    //                 continue;
-    //             }
-
-    //             if (field.type === FieldType.Bomb) {
-    //                 gameCanvasContext.fillStyle = "#ff0000";
-    //                 gameCanvasContext.fillRect(field.startX, field.startY, 50, 50);
-    //             } else if (field.type === FieldType.Number) {
-    //                 gameCanvasContext.fillStyle = "#FFFFFF";
-    //                 gameCanvasContext.fillRect(field.startX, field.startY, 50, 50);
-
-    //                 gameCanvasContext.fillStyle = "#000000";
-    //                 gameCanvasContext.font = "30px Georgia";
-    //                 gameCanvasContext.fillText(`${field.number}`, field.startX + 15, field.startY + 32);
-    //             } else {
-    //                 gameCanvasContext.fillStyle = "#36ff00";
-    //                 gameCanvasContext.fillRect(field.startX, field.startY, 50, 50);
-    //             }
-    //         }
-    //     }
-    // }
-
-    // public static revealSurroundingFields(field: Field): void {
-    //     let surroundingFields: Field[] = Helpers.getSurroundingFields(field);
-    //     for (let i: number = 0, len: number = surroundingFields.length; i < len; i++) {
-    //         Renderer.revealField(surroundingFields[i]);
-    //     }
-    // }
+        if (field.flag || field.type === FieldType.Bomb || field.type === FieldType.Number) {
+            return;
+        } else {
+            const surroundingFields: Field[] = Helpers.getSurroundingFields(field).filter((x: Field) => !x.revealed && !x.flag);
+            surroundingFields.forEach((x: Field) => x.revealed = true);
+            for (let i: number = 0, len: number = surroundingFields.length; i < len; i++) {
+                Renderer.revealField(surroundingFields[i], allFields);
+            }
+        }
+    }
 
     public static fillField(field: Field, fillStyle: string): void {
         gameCanvasContext.fillStyle = fillStyle;

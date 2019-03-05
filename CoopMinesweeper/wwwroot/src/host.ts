@@ -1,4 +1,3 @@
-
 HtmlHelper.initHtmlElements();
 Renderer.drawBackground();
 Initializer.initFields();
@@ -54,9 +53,17 @@ peer.on("data", (data: any): void => {
     if (dataObject.mouseEventType === MouseEventType.Move) {
         Renderer.drawMouse(dataObject.mousePosition);
     } else if (dataObject.mouseEventType === MouseEventType.Click) {
-        ActionHelper.handleClick(dataObject.mousePosition);
+        debugger;
+        const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
+        const affectedFields: Field[] = ActionHelper.handleClick(field);
+        peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+        Renderer.drawAffectedFields(affectedFields);
     } else if (dataObject.mouseEventType === MouseEventType.Flag) {
-        ActionHelper.HandleFlag(dataObject.mousePosition);
+        debugger;
+        const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
+        const affectedFields: Field[] = ActionHelper.HandleFlag(field);
+        peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+        Renderer.drawAffectedFields(affectedFields);
     }
 });
 
@@ -72,19 +79,38 @@ signalrConnection.on("ConnectWithClient", (clientSignal: string) => {
 
 mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
-
-    Renderer.renderMouseMove(field);
     peer.send(JSON.stringify(new ServerDataObject(mousePosition, ServerDataType.MouseMove)));
+
+    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    Renderer.renderMouseMove(field);
 });
 
 mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    ActionHelper.handleClick(mousePosition);
+    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+
+    if (field.revealed || field.flag) {
+        return;
+    }
+
+    const affectedFields: Field[] = ActionHelper.handleClick(field);
+    peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+
+    Renderer.drawAffectedFields(affectedFields);
 });
 
 mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
+    debugger;
     e.preventDefault();
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    ActionHelper.HandleFlag(mousePosition);
+    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+
+    if (field.revealed) {
+        return;
+    }
+
+    const affectedFields: Field[] = ActionHelper.HandleFlag(field);
+    peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+
+    Renderer.drawAffectedFields(affectedFields);
 });
