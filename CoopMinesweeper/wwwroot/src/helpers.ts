@@ -86,7 +86,7 @@ abstract class Helpers {
                 surroundingFields.push(topCenter);
             }
 
-            const topRight: Field = matrix[row - 1][column];
+            const topRight: Field = matrix[row - 1][column + 1];
             if (topRight && !topRight.revealed && !topRight.flag) {
                 topRight.revealed = true;
                 surroundingFields.push(topRight);

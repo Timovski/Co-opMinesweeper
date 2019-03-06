@@ -83,8 +83,7 @@ abstract class Renderer {
         if (field.flag || field.type === FieldType.Bomb || field.type === FieldType.Number) {
             return;
         } else {
-            const surroundingFields: Field[] = Helpers.getSurroundingFields(field).filter((x: Field) => !x.revealed && !x.flag);
-            surroundingFields.forEach((x: Field) => x.revealed = true);
+            const surroundingFields: Field[] = Helpers.getSurroundingFieldsForReveal(field);
             for (let i: number = 0, len: number = surroundingFields.length; i < len; i++) {
                 Renderer.revealField(surroundingFields[i], allFields);
             }
