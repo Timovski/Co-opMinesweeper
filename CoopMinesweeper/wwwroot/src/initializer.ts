@@ -73,4 +73,22 @@ abstract class Initializer {
             }
         }
     }
+
+    public static getAllBombs(): Field[] {
+        let field: Field;
+        const fields: Field[] = [];
+
+        for (let row: number = 0; row < 16; row++) {
+            for (let column: number = 0; column < 30; column++) {
+                field = matrix[row][column];
+
+                if (field.type === FieldType.Bomb) {
+                    field.revealed = true;
+                    fields.push(field);
+                }
+            }
+        }
+
+        return fields;
+    }
 }

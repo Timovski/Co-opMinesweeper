@@ -12,6 +12,11 @@ abstract class ActionHelper {
             return [];
         }
 
+        if (field.type === FieldType.Bomb) {
+            gameEnded = true;
+            return Initializer.getAllBombs();
+        }
+
         const affectedFields: Field[] = [];
         Renderer.revealField(field, affectedFields);
         return affectedFields;

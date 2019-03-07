@@ -9,6 +9,7 @@ let cursorImage: HTMLImageElement = new Image();
 let matrix: Field[][] = new Array<Field[]>(16);
 let previousActiveField: Field;
 let gameStarted: boolean = false;
+let gameEnded: boolean = false;
 
 abstract class HtmlHelper {
     public static initHtmlElements(): void {
