@@ -34,7 +34,8 @@ namespace CoopMinesweeper
                 options.KeepAliveInterval = TimeSpan.FromSeconds(150);
             });
 
-            services.AddTransient<IGameService, GameService>();
+            services.AddSingleton<IGameService, GameService>();
+            services.AddHostedService<TimedHostedService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
