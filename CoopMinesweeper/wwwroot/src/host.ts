@@ -2,13 +2,14 @@ HtmlHelper.initHtmlElements();
 Renderer.drawBackground();
 Initializer.initFields();
 
+const hostOverlay: HTMLElement = document.getElementById("host-overlay") as HTMLElement;
 const hostOverlayGameId: HTMLElement = document.getElementById("host-overlay-game-id") as HTMLElement;
 const hostOverlayStatus: HTMLElement = document.getElementById("host-overlay-status") as HTMLElement;
-const hostOverlay: HTMLElement = document.getElementById("host-overlay") as HTMLElement;
+const hostRestartButton: HTMLElement = document.getElementById("host-restart-button") as HTMLElement;
 
 let peer: SimplePeer = new SimplePeer({ initiator: true, trickle: false });
-let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub").build();
-signalrConnection.serverTimeoutInMilliseconds = 1000 * 60 * 5;
+let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub", { logger: signalR.LogLevel.Information }).build();
+signalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
 let hostGameId: string;
 let hostSignal: string;
@@ -17,6 +18,11 @@ hostOverlayStatus.innerText = "Waiting for signal...";
 
 peer.on("error", (err: any): void => {
     debugger;
+    // todo: implement
+});
+
+signalrConnection.onclose((error?: Error): void => {
+    // debugger;
     // todo: implement
 });
 
@@ -41,29 +47,41 @@ peer.on("signal", (data: any): void => {
 });
 
 peer.on("connect", (): void => {
-    if (hostOverlay.parentNode) {
-        hostOverlay.parentNode.removeChild(hostOverlay);
-    }
+    // if (hostOverlay.parentNode) {
+    //     hostOverlay.parentNode.removeChild(hostOverlay);
+    // }
+
+    hostOverlay.style.display = "none";
+    hostOverlayGameId.style.display = "none";
+    hostOverlayStatus.style.display = "none";
+
     signalrConnection.stop();
     // todo: implement
 });
 
 peer.on("data", (data: any): void => {
     const dataObject: ClientDataObject = JSON.parse(data);
-    if (dataObject.mouseEventType === MouseEventType.Move) {
+    if (dataObject.clientEventType === ClientEventType.Move) {
         Renderer.drawMouse(dataObject.mousePosition);
-    } else if (dataObject.mouseEventType === MouseEventType.Click) {
+    } else if (dataObject.clientEventType === ClientEventType.Click) {
         debugger;
         const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
         const affectedFields: Field[] = ActionHelper.handleClick(field);
-        peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+        peer.send(JSON.stringify(new ServerDataObject(gameEnded ? ServerEventType.GameOver : ServerEventType.Game, affectedFields)));
         Renderer.drawAffectedFields(affectedFields);
-    } else if (dataObject.mouseEventType === MouseEventType.Flag) {
+    } else if (dataObject.clientEventType === ClientEventType.Flag) {
         debugger;
         const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
         const affectedFields: Field[] = ActionHelper.HandleFlag(field);
-        peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
         Renderer.drawAffectedFields(affectedFields);
+    } else if (dataObject.clientEventType === ClientEventType.Reset) {
+        Renderer.drawBackground();
+        Initializer.resetFields();
+        hostOverlay.style.display = "none";
+        gameStarted = false;
+        gameEnded = false;
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
     }
 });
 
@@ -79,7 +97,7 @@ signalrConnection.on("ConnectWithClient", (clientSignal: string) => {
 
 mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    peer.send(JSON.stringify(new ServerDataObject(mousePosition, ServerDataType.MouseMove)));
+    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Move, mousePosition)));
 
     const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
     Renderer.renderMouseMove(field);
@@ -94,7 +112,7 @@ mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
     }
 
     const affectedFields: Field[] = ActionHelper.handleClick(field);
-    peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+    peer.send(JSON.stringify(new ServerDataObject(gameEnded ? ServerEventType.GameOver : ServerEventType.Game, affectedFields)));
 
     Renderer.drawAffectedFields(affectedFields);
 });
@@ -110,7 +128,16 @@ mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     }
 
     const affectedFields: Field[] = ActionHelper.HandleFlag(field);
-    peer.send(JSON.stringify(new ServerDataObject(affectedFields, ServerDataType.Game)));
+    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
 
     Renderer.drawAffectedFields(affectedFields);
+});
+
+hostRestartButton.addEventListener("click", (e: MouseEvent): void => {
+    Renderer.drawBackground();
+    Initializer.resetFields();
+    hostOverlay.style.display = "none";
+    gameStarted = false;
+    gameEnded = false;
+    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
 });

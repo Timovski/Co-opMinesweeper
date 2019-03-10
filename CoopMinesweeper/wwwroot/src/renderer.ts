@@ -1,5 +1,7 @@
 abstract class Renderer {
     public static drawBackground(): void {
+        gameCanvasContext.clearRect(0, 0, gameCanvas.width, gameCanvas.height);
+
         gameCanvasContext.beginPath();
         gameCanvasContext.lineWidth = 2;
         gameCanvasContext.strokeStyle = "#ff0000";

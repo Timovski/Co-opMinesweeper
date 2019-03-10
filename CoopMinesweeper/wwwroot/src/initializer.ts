@@ -14,6 +14,20 @@ abstract class Initializer {
         }
     }
 
+    public static resetFields(): void {
+        let field: Field;
+        for (let row: number = 0; row < 16; row++) {
+            for (let column: number = 0; column < 30; column++) {
+                field = matrix[row][column];
+
+                field.number = 0;
+                field.revealed = false;
+                field.flag = false;
+                field.type = FieldType.None;
+            }
+        }
+    }
+
     public static markStartingFields(field: Field): void {
         field.type = FieldType.NoBomb;
 

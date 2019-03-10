@@ -43,39 +43,51 @@ class MousePosition {
 }
 
 class ClientDataObject {
-    public mousePosition: MousePosition;
-    public mouseEventType: MouseEventType;
+    public mousePosition!: MousePosition;
+    public clientEventType: ClientEventType;
 
-    constructor(mousePosition: MousePosition, mouseEventType: MouseEventType) {
-        this.mousePosition = mousePosition;
-        this.mouseEventType = mouseEventType;
+    constructor(clientEventType: ClientEventType);
+    constructor(clientEventType: ClientEventType, mousePosition: MousePosition);
+    constructor(clientEventType: ClientEventType, mousePosition?: MousePosition) {
+        if (mousePosition) {
+            this.mousePosition = mousePosition;
+        }
+
+        this.clientEventType = clientEventType;
     }
 }
 
-enum MouseEventType {
+enum ClientEventType {
     Move,
     Click,
-    Flag
+    Flag,
+    Reset
 }
 
 class ServerDataObject {
     public affectedFields!: Field[];
     public mousePosition!: MousePosition;
-    public serverDataType: ServerDataType;
+    public serverEventType: ServerEventType;
 
-    constructor(mousePosition: MousePosition, serverDataType: ServerDataType)
-    constructor(affectedFields: Field[], serverDataType: ServerDataType)
-    constructor(arg: MousePosition | Field[], serverDataType: ServerDataType) {
-        if (arg instanceof MousePosition) {
-            this.mousePosition = arg;
-        } else {
-            this.affectedFields = arg;
+    constructor(serverEventType: ServerEventType);
+    constructor(serverEventType: ServerEventType, mousePosition: MousePosition);
+    constructor(serverEventType: ServerEventType, affectedFields: Field[]);
+    constructor(serverEventType: ServerEventType, arg?: MousePosition | Field[]) {
+        if (arg) {
+            if (arg instanceof MousePosition) {
+                this.mousePosition = arg;
+            } else {
+                this.affectedFields = arg;
+            }
         }
-        this.serverDataType = serverDataType;
+
+        this.serverEventType = serverEventType;
     }
 }
 
-enum ServerDataType {
-    MouseMove,
-    Game
+enum ServerEventType {
+    Move,
+    Game,
+    GameOver,
+    Reset
 }

@@ -8,11 +8,14 @@ abstract class ActionHelper {
             Initializer.createNumbers();
         }
 
-        if (field.revealed || field.flag) {
-            return [];
-        }
+        // if (field.revealed || field.flag) {
+        //     return [];
+        // }
 
         if (field.type === FieldType.Bomb) {
+            hostOverlay.style.display = "table";
+            hostRestartButton.style.display = "inline-block";
+
             gameEnded = true;
             return Initializer.getAllBombs();
         }
@@ -23,9 +26,9 @@ abstract class ActionHelper {
     }
 
     public static HandleFlag(field: Field): Field[] {
-        if (field.revealed) {
-            return [];
-        }
+        // if (field.revealed) {
+        //     return [];
+        // }
 
         field.flag = !field.flag;
         return [field];
