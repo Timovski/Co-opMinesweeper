@@ -11,6 +11,10 @@ let previousActiveField: Field;
 let gameStarted: boolean = false;
 let gameEnded: boolean = false;
 
+const latencyTestStamps: number[] = [];
+const latencyTestResults: number[] = [];
+let averageLatency: number;
+
 abstract class HtmlHelper {
     public static initHtmlElements(): void {
         const width: number = 962;

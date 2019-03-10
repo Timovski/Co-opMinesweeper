@@ -7,6 +7,8 @@ const hostOverlayGameId: HTMLElement = document.getElementById("host-overlay-gam
 const hostOverlayStatus: HTMLElement = document.getElementById("host-overlay-status") as HTMLElement;
 const hostRestartButton: HTMLElement = document.getElementById("host-restart-button") as HTMLElement;
 
+const hostTestLatencyButton: HTMLElement = document.getElementById("host-test-latency-button") as HTMLElement;
+
 let peer: SimplePeer = new SimplePeer({ initiator: true, trickle: false });
 let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub", { logger: signalR.LogLevel.Information }).build();
 signalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
@@ -61,7 +63,18 @@ peer.on("connect", (): void => {
 
 peer.on("data", (data: any): void => {
     const dataObject: ClientDataObject = JSON.parse(data);
-    if (dataObject.clientEventType === ClientEventType.Move) {
+    if (dataObject.clientEventType === ClientEventType.LatencyTest) {
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyResponse, dataObject.stamp)));
+    } else if (dataObject.clientEventType === ClientEventType.LatencyResponse) {
+        const t0: number = latencyTestStamps[dataObject.stamp];
+        const t1: number = performance.now();
+        latencyTestResults[dataObject.stamp] = t1 - t0;
+
+        if (dataObject.stamp === 3) {
+            averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
+            alert(`The latency is ${averageLatency} milliseconds.`);
+        }
+    } else if (dataObject.clientEventType === ClientEventType.Move) {
         Renderer.drawMouse(dataObject.mousePosition);
     } else if (dataObject.clientEventType === ClientEventType.Click) {
         debugger;
@@ -140,4 +153,11 @@ hostRestartButton.addEventListener("click", (e: MouseEvent): void => {
     gameStarted = false;
     gameEnded = false;
     peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
+});
+
+hostTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+    for (let i: number = 1; i < 4; i++) {
+        latencyTestStamps[i] = performance.now();
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));
+    }
 });

@@ -9,6 +9,8 @@ const connectButton: HTMLElement = document.getElementById("connect-button") as 
 const clientOverlayStatus: HTMLElement = document.getElementById("client-overlay-status") as HTMLElement;
 const clientRestartButton: HTMLElement = document.getElementById("client-restart-button") as HTMLElement;
 
+const clientTestLatencyButton: HTMLElement = document.getElementById("client-test-latency-button") as HTMLElement;
+
 let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false });
 let clientSignalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub", { logger: signalR.LogLevel.Information }).build();
 clientSignalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
@@ -82,7 +84,18 @@ clientPeer.on("connect", (): void => {
 
 clientPeer.on("data", (data: any): void => {
     const serverDataObject: ServerDataObject = JSON.parse(data);
-    if (serverDataObject.serverEventType === ServerEventType.Move) {
+    if (serverDataObject.serverEventType === ServerEventType.LatencyTest) {
+        clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyResponse, serverDataObject.stamp)));
+    } else if (serverDataObject.serverEventType === ServerEventType.LatencyResponse) {
+        const t0: number = latencyTestStamps[serverDataObject.stamp];
+        const t1: number = performance.now();
+        latencyTestResults[serverDataObject.stamp] = t1 - t0;
+
+        if (serverDataObject.stamp === 3) {
+            averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
+            alert(`The latency is ${averageLatency} milliseconds.`);
+        }
+    } else if (serverDataObject.serverEventType === ServerEventType.Move) {
         Renderer.drawMouse(serverDataObject.mousePosition);
     } else if (serverDataObject.serverEventType === ServerEventType.Game) {
         for (let i: number = 0, len: number = serverDataObject.affectedFields.length; i < len; i++) {
@@ -141,4 +154,11 @@ mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
 
 clientRestartButton.addEventListener("click", (e: MouseEvent): void => {
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Reset)));
+});
+
+clientTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+    for (let i: number = 1; i < 4; i++) {
+        latencyTestStamps[i] = performance.now();
+        clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyTest, i)));
+    }
 });

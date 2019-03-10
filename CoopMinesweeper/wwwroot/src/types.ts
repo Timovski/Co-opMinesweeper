@@ -44,13 +44,19 @@ class MousePosition {
 
 class ClientDataObject {
     public mousePosition!: MousePosition;
+    public stamp!: number;
     public clientEventType: ClientEventType;
 
-    constructor(clientEventType: ClientEventType);
-    constructor(clientEventType: ClientEventType, mousePosition: MousePosition);
-    constructor(clientEventType: ClientEventType, mousePosition?: MousePosition) {
-        if (mousePosition) {
-            this.mousePosition = mousePosition;
+    constructor(clientEventType: ClientEventType.Reset);
+    constructor(clientEventType: ClientEventType.Move | ClientEventType.Click | ClientEventType.Flag, mousePosition: MousePosition);
+    constructor(clientEventType: ClientEventType.LatencyTest | ClientEventType.LatencyResponse, stamp: number);
+    constructor(clientEventType: ClientEventType, arg?: MousePosition | number) {
+        if (arg) {
+            if (arg instanceof MousePosition) {
+                this.mousePosition = arg;
+            } else {
+                this.stamp = arg;
+            }
         }
 
         this.clientEventType = clientEventType;
@@ -61,21 +67,27 @@ enum ClientEventType {
     Move,
     Click,
     Flag,
-    Reset
+    Reset,
+    LatencyTest,
+    LatencyResponse
 }
 
 class ServerDataObject {
-    public affectedFields!: Field[];
     public mousePosition!: MousePosition;
+    public stamp!: number;
+    public affectedFields!: Field[];
     public serverEventType: ServerEventType;
 
-    constructor(serverEventType: ServerEventType);
-    constructor(serverEventType: ServerEventType, mousePosition: MousePosition);
-    constructor(serverEventType: ServerEventType, affectedFields: Field[]);
-    constructor(serverEventType: ServerEventType, arg?: MousePosition | Field[]) {
+    constructor(serverEventType: ServerEventType.Reset);
+    constructor(serverEventType: ServerEventType.Move, mousePosition: MousePosition);
+    constructor(serverEventType: ServerEventType.LatencyTest | ServerEventType.LatencyResponse, stamp: number);
+    constructor(serverEventType: ServerEventType.Game | ServerEventType.GameOver, affectedFields: Field[]);
+    constructor(serverEventType: ServerEventType, arg?: MousePosition | number | Field[]) {
         if (arg) {
             if (arg instanceof MousePosition) {
                 this.mousePosition = arg;
+            } else if (typeof arg === "number") {
+                this.stamp = arg;
             } else {
                 this.affectedFields = arg;
             }
@@ -89,5 +101,7 @@ enum ServerEventType {
     Move,
     Game,
     GameOver,
-    Reset
+    Reset,
+    LatencyTest,
+    LatencyResponse
 }
