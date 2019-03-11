@@ -28,7 +28,7 @@ clientSignalrConnection.start().then(() => {
     // todo: implement
 });
 
-let getHostSignal: () => void = (): void => {
+const getHostSignal: () => void = (): void => {
     clientGameId = gameIdInput.value;
     if (connected) {
         clientSignalrConnection.invoke("GetHostSignal", clientGameId).catch((err: any) => {
@@ -80,6 +80,7 @@ clientPeer.on("connect", (): void => {
     clientOverlayStatus.style.display = "none";
 
     clientSignalrConnection.stop();
+    clientTesttency();
 });
 
 clientPeer.on("data", (data: any): void => {
@@ -87,14 +88,7 @@ clientPeer.on("data", (data: any): void => {
     if (serverDataObject.serverEventType === ServerEventType.LatencyTest) {
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyResponse, serverDataObject.stamp)));
     } else if (serverDataObject.serverEventType === ServerEventType.LatencyResponse) {
-        const t0: number = latencyTestStamps[serverDataObject.stamp];
-        const t1: number = performance.now();
-        latencyTestResults[serverDataObject.stamp] = t1 - t0;
-
-        if (serverDataObject.stamp === 3) {
-            averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
-            alert(`The latency is ${averageLatency} milliseconds.`);
-        }
+        clientProcessLatency(serverDataObject.stamp);
     } else if (serverDataObject.serverEventType === ServerEventType.Move) {
         Renderer.drawMouse(serverDataObject.mousePosition);
     } else if (serverDataObject.serverEventType === ServerEventType.Game) {
@@ -110,13 +104,28 @@ clientPeer.on("data", (data: any): void => {
             }
         }
         Renderer.drawAffectedFields(serverDataObject.affectedFields);
+        if (serverDataObject.flagsLeft) {
+            HtmlHelper.updateFlags(serverDataObject.flagsLeft);
+        }
+
+        if (!gameStarted) {
+            gameStarted = true;
+            HtmlHelper.clientStartTimer();
+        }
     } else if (serverDataObject.serverEventType === ServerEventType.GameOver) {
+        gameStarted = false;
+        HtmlHelper.stopTimer();
+        HtmlHelper.setTimer(serverDataObject.elapsedTime!);
+
         Renderer.drawAffectedFields(serverDataObject.affectedFields);
         clientOverlay.style.display = "table";
         clientRestartButton.style.display = "inline-block";
     } else if (serverDataObject.serverEventType === ServerEventType.Reset) {
         Renderer.drawBackground();
         Initializer.resetFields();
+        HtmlHelper.setTimer(0);
+        HtmlHelper.updateFlags(99);
+
         clientOverlay.style.display = "none";
     }
 });
@@ -156,9 +165,22 @@ clientRestartButton.addEventListener("click", (e: MouseEvent): void => {
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Reset)));
 });
 
-clientTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+const clientTesttency: () => void = (): void => {
     for (let i: number = 1; i < 4; i++) {
         latencyTestStamps[i] = performance.now();
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyTest, i)));
     }
-});
+};
+
+const clientProcessLatency: (stamp: number) => void = (stamp: number): void => {
+    const t0: number = latencyTestStamps[stamp];
+    const t1: number = performance.now();
+    latencyTestResults[stamp] = t1 - t0;
+
+    if (stamp === 3) {
+        averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
+        // alert(`The latency is ${averageLatency} milliseconds.`);
+    }
+};
+
+// clientTestLatencyButton.addEventListener("click", clientTesttency);

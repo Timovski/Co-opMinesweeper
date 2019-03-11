@@ -76,20 +76,28 @@ class ServerDataObject {
     public mousePosition!: MousePosition;
     public stamp!: number;
     public affectedFields!: Field[];
+    public flagsLeft!: number | undefined;
+    public elapsedTime!: number | undefined;
     public serverEventType: ServerEventType;
 
     constructor(serverEventType: ServerEventType.Reset);
     constructor(serverEventType: ServerEventType.Move, mousePosition: MousePosition);
     constructor(serverEventType: ServerEventType.LatencyTest | ServerEventType.LatencyResponse, stamp: number);
-    constructor(serverEventType: ServerEventType.Game | ServerEventType.GameOver, affectedFields: Field[]);
-    constructor(serverEventType: ServerEventType, arg?: MousePosition | number | Field[]) {
+    constructor(serverEventType: ServerEventType.Game, affectedFields: Field[], flagsLeft?: number);
+    constructor(serverEventType: ServerEventType.GameOver, affectedFields: Field[], elapsedTime: number);
+    constructor(serverEventType: ServerEventType, arg?: MousePosition | number | Field[], arg2?: number) {
         if (arg) {
             if (arg instanceof MousePosition) {
                 this.mousePosition = arg;
             } else if (typeof arg === "number") {
                 this.stamp = arg;
-            } else {
+            } else { // Game
                 this.affectedFields = arg;
+                if (serverEventType === ServerEventType.Game) {
+                    this.flagsLeft = arg2;
+                } else {
+                    this.elapsedTime = arg2;
+                }
             }
         }
 

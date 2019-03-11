@@ -6,6 +6,10 @@ abstract class ActionHelper {
             Initializer.markStartingFields(field);
             Initializer.createBombs();
             Initializer.createNumbers();
+
+            if (!timerStarted) { // todo: Because the timer could’ve been set by a flag before the game began
+                HtmlHelper.hostStartTimer();
+            }
         }
 
         // if (field.revealed || field.flag) {
@@ -17,6 +21,7 @@ abstract class ActionHelper {
             hostRestartButton.style.display = "inline-block";
 
             gameEnded = true;
+            HtmlHelper.stopTimer();
             return Initializer.getAllBombs();
         }
 
@@ -29,6 +34,12 @@ abstract class ActionHelper {
         // if (field.revealed) {
         //     return [];
         // }
+        if (!timerStarted) {
+            HtmlHelper.hostStartTimer();
+        }
+
+        flagsLeft += field.flag ? 1 : -1;
+        HtmlHelper.updateFlags(flagsLeft);
 
         field.flag = !field.flag;
         return [field];

@@ -66,27 +66,24 @@ peer.on("data", (data: any): void => {
     if (dataObject.clientEventType === ClientEventType.LatencyTest) {
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyResponse, dataObject.stamp)));
     } else if (dataObject.clientEventType === ClientEventType.LatencyResponse) {
-        const t0: number = latencyTestStamps[dataObject.stamp];
-        const t1: number = performance.now();
-        latencyTestResults[dataObject.stamp] = t1 - t0;
-
-        if (dataObject.stamp === 3) {
-            averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
-            alert(`The latency is ${averageLatency} milliseconds.`);
-        }
+        hostProcessLatency(dataObject.stamp);
     } else if (dataObject.clientEventType === ClientEventType.Move) {
         Renderer.drawMouse(dataObject.mousePosition);
     } else if (dataObject.clientEventType === ClientEventType.Click) {
-        debugger;
         const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
         const affectedFields: Field[] = ActionHelper.handleClick(field);
-        peer.send(JSON.stringify(new ServerDataObject(gameEnded ? ServerEventType.GameOver : ServerEventType.Game, affectedFields)));
+
+        if (gameEnded) {
+            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
+        } else {
+            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
+        }
+
         Renderer.drawAffectedFields(affectedFields);
     } else if (dataObject.clientEventType === ClientEventType.Flag) {
-        debugger;
         const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
         const affectedFields: Field[] = ActionHelper.HandleFlag(field);
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields, flagsLeft)));
         Renderer.drawAffectedFields(affectedFields);
     } else if (dataObject.clientEventType === ClientEventType.Reset) {
         Renderer.drawBackground();
@@ -94,6 +91,9 @@ peer.on("data", (data: any): void => {
         hostOverlay.style.display = "none";
         gameStarted = false;
         gameEnded = false;
+        HtmlHelper.setTimer(0);
+        flagsLeft = 99;
+        HtmlHelper.updateFlags(99);
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
     }
 });
@@ -125,13 +125,17 @@ mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
     }
 
     const affectedFields: Field[] = ActionHelper.handleClick(field);
-    peer.send(JSON.stringify(new ServerDataObject(gameEnded ? ServerEventType.GameOver : ServerEventType.Game, affectedFields)));
+
+    if (gameEnded) {
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
+    } else {
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
+    }
 
     Renderer.drawAffectedFields(affectedFields);
 });
 
 mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
-    debugger;
     e.preventDefault();
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
     const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
@@ -141,7 +145,7 @@ mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     }
 
     const affectedFields: Field[] = ActionHelper.HandleFlag(field);
-    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
+    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields, flagsLeft)));
 
     Renderer.drawAffectedFields(affectedFields);
 });
@@ -152,12 +156,26 @@ hostRestartButton.addEventListener("click", (e: MouseEvent): void => {
     hostOverlay.style.display = "none";
     gameStarted = false;
     gameEnded = false;
+    HtmlHelper.setTimer(0);
+    flagsLeft = 99;
+    HtmlHelper.updateFlags(99);
     peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
 });
 
-hostTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
-    for (let i: number = 1; i < 4; i++) {
-        latencyTestStamps[i] = performance.now();
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));
+// hostTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+//     for (let i: number = 1; i < 4; i++) {
+//         latencyTestStamps[i] = performance.now();
+//         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));
+//     }
+// });
+
+const hostProcessLatency: (stamp: number) => void = (stamp: number): void => {
+    const t0: number = latencyTestStamps[stamp];
+    const t1: number = performance.now();
+    latencyTestResults[stamp] = t1 - t0;
+
+    if (stamp === 3) {
+        averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
+        // alert(`The latency is ${averageLatency} milliseconds.`);
     }
-});
+};
