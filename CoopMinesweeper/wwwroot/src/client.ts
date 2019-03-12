@@ -110,7 +110,7 @@ clientPeer.on("data", (data: any): void => {
 
         if (!gameStarted) {
             gameStarted = true;
-            HtmlHelper.clientStartTimer();
+            HtmlHelper.startTimer();
         }
     } else if (serverDataObject.serverEventType === ServerEventType.GameOver) {
         gameStarted = false;

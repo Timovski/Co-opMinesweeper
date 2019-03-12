@@ -7,8 +7,8 @@ abstract class ActionHelper {
             Initializer.createBombs();
             Initializer.createNumbers();
 
-            if (!timerStarted) { // todo: Because the timer could’ve been set by a flag before the game began
-                HtmlHelper.hostStartTimer();
+            if (!timerIntervalId) { // todo: Because the timer could’ve been set by a flag before the game began
+                HtmlHelper.startTimer();
             }
         }
 
@@ -34,8 +34,9 @@ abstract class ActionHelper {
         // if (field.revealed) {
         //     return [];
         // }
-        if (!timerStarted) {
-            HtmlHelper.hostStartTimer();
+
+        if (!timerIntervalId) {
+            HtmlHelper.startTimer();
         }
 
         flagsLeft += field.flag ? 1 : -1;

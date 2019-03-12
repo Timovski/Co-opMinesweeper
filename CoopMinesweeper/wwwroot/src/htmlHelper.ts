@@ -20,10 +20,9 @@ let averageLatency: number;
 
 // todo: host only
 let flagsLeft: number = 99;
-let timerStarted: boolean = false;
 
 let elapsedTime: number = 0;
-let intervalId: number;
+let timerIntervalId: number = 0;
 
 abstract class HtmlHelper {
     public static initHtmlElements(): void {
@@ -56,35 +55,13 @@ abstract class HtmlHelper {
         flagsElement.innerText = numberOfFlagsLeft.toString();
     }
 
-    public static hostStartTimer(): void {
-        timerStarted = true;
-        intervalId = setInterval(() => {
-            elapsedTime++;
-            timerElement.innerText = `00${elapsedTime}`.slice(-3);
-            if (elapsedTime === 999) {
-                clearInterval(intervalId);
-                timerStarted = false;
-            }
-        }, 1000);
-    }
-
-    public static clientStartTimer(): void {
-        const signalTime: number = averageLatency / 2 / 1000;
-        const secondsPassed: number = Math.floor(signalTime);
-        const decimalPart: number = signalTime - Math.floor(signalTime);
-
-        elapsedTime = secondsPassed + 1;
-        setTimeout(() => {
-            timerElement.innerText = `00${elapsedTime}`.slice(-3);
-
-            intervalId = setInterval(() => {
+    public static startTimer(): void {
+        timerIntervalId = setInterval(() => {
+            if (elapsedTime < 999) {
                 elapsedTime++;
                 timerElement.innerText = `00${elapsedTime}`.slice(-3);
-                if (elapsedTime === 999) {
-                    clearInterval(intervalId);
-                }
-            }, 1000);
-        }, 1000 - decimalPart);
+            }
+        }, 1000);
     }
 
     public static setTimer(seconds: number): void {
@@ -93,7 +70,7 @@ abstract class HtmlHelper {
     }
 
     public static stopTimer(): void {
-        clearInterval(intervalId);
-        timerStarted = false;
+        clearInterval(timerIntervalId);
+        timerIntervalId = 0;
     }
 }
