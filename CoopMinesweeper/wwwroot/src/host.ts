@@ -1,15 +1,5 @@
-HtmlHelper.initHtmlElements();
 Renderer.drawBackground();
 Initializer.initFields();
-
-const hostOverlay: HTMLElement = document.getElementById("host-overlay") as HTMLElement;
-const hostOverlayGameId: HTMLElement = document.getElementById("host-overlay-game-id") as HTMLElement;
-const hostOverlayStatus: HTMLElement = document.getElementById("host-overlay-status") as HTMLElement;
-
-const hostRestartButton: HTMLElement = document.getElementById("host-restart-button") as HTMLElement;
-const hostEndGameButton: HTMLElement = document.getElementById("host-end-game-button") as HTMLElement;
-
-const hostTestLatencyButton: HTMLElement = document.getElementById("host-test-latency-button") as HTMLElement;
 
 let peer: SimplePeer = new SimplePeer({ initiator: true, trickle: false });
 let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub", { logger: signalR.LogLevel.Information }).build();
@@ -17,45 +7,23 @@ signalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
 let hostGameId: string;
 let hostSignal: string;
+let gameStarted: boolean = false;
 
-hostOverlayStatus.innerText = "Waiting for signal...";
+overlayStatus.innerText = "Waiting for signal...";
 
-peer.on("error", (err: any): void => {
-    if (err.code === "ERR_ICE_CONNECTION_FAILURE") {
-        return;
-    }
-    debugger;
-    // todo: implement
-});
-
-peer.on("close", () => {
-    hostOverlay.style.display = "table";
-    hostEndGameButton.style.display = "inline-block";
-    hostOverlayStatus.style.display = "block";
-    hostOverlayStatus.innerText = "Other player has disconnected :/";
-});
-
-hostEndGameButton.addEventListener("click", (e: MouseEvent): void => {
-    window.location.href = "/index.html";
-});
-
-signalrConnection.onclose((error?: Error): void => {
-    // debugger;
-    // todo: implement
-});
-
+// SimplePeer
 peer.on("signal", (data: any): void => {
     hostSignal = JSON.stringify(data);
 
-    hostOverlayStatus.innerText = "Signal received successfully, connecting to server...";
+    overlayStatus.innerText = "Signal received successfully, connecting to server...";
 
     signalrConnection.start().then(() => {
-        hostOverlayStatus.innerText = "Connected to server successfully, creating game...";
+        overlayStatus.innerText = "Connected to server successfully, creating game...";
 
         signalrConnection.invoke("CreateGame").then((newGameId: string) => {
             hostGameId = newGameId;
-            hostOverlayGameId.innerText = `Game Id: ${newGameId}`;
-            hostOverlayStatus.innerText = "Waiting for other player to join...";
+            gameIdText.innerText = `Game Id: ${newGameId}`;
+            overlayStatus.innerText = "Waiting for other player to join...";
         }).catch((err: any) => {
             // todo: implement
         });
@@ -65,16 +33,8 @@ peer.on("signal", (data: any): void => {
 });
 
 peer.on("connect", (): void => {
-    // if (hostOverlay.parentNode) {
-    //     hostOverlay.parentNode.removeChild(hostOverlay);
-    // }
-
-    hostOverlay.style.display = "none";
-    hostOverlayGameId.style.display = "none";
-    hostOverlayStatus.style.display = "none";
-
+    GameHelper.hideOverlay();
     signalrConnection.stop();
-    // todo: implement
 });
 
 peer.on("data", (data: any): void => {
@@ -87,33 +47,28 @@ peer.on("data", (data: any): void => {
         Renderer.drawMouse(dataObject.mousePosition);
     } else if (dataObject.clientEventType === ClientEventType.Click) {
         const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
-        const affectedFields: Field[] = ActionHelper.handleClick(field);
-
-        if (gameEnded) {
-            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
-        } else {
-            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
-        }
-
-        Renderer.drawAffectedFields(affectedFields);
+        ActionHelper.handleClick(field);
     } else if (dataObject.clientEventType === ClientEventType.Flag) {
         const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
-        const affectedFields: Field[] = ActionHelper.HandleFlag(field);
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields, flagsLeft)));
-        Renderer.drawAffectedFields(affectedFields);
+        ActionHelper.handleFlag(field);
     } else if (dataObject.clientEventType === ClientEventType.Reset) {
-        Renderer.drawBackground();
-        Initializer.resetFields();
-        hostOverlay.style.display = "none";
-        gameStarted = false;
-        gameEnded = false;
-        HtmlHelper.setTimer(0);
-        flagsLeft = 99;
-        HtmlHelper.updateFlags(99);
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
+        ActionHelper.restartGame();
     }
 });
 
+peer.on("close", () => {
+    GameHelper.showEndGameScreen();
+});
+
+peer.on("error", (err: any): void => {
+    if (err.code === "ERR_ICE_CONNECTION_FAILURE") {
+        return;
+    }
+
+    // todo: implement
+});
+
+// Signalr
 signalrConnection.on("HostSignalPrompt", (clientConnectionId: string) => {
     signalrConnection.invoke("ReceiveHostSignal", clientConnectionId, hostSignal).catch((err: any) => {
         // todo: implement
@@ -124,6 +79,11 @@ signalrConnection.on("ConnectWithClient", (clientSignal: string) => {
     peer.signal(clientSignal);
 });
 
+signalrConnection.onclose((error?: Error): void => {
+    // todo: implement
+});
+
+// Canvas Events
 mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
     peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Move, mousePosition)));
@@ -140,15 +100,7 @@ mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
         return;
     }
 
-    const affectedFields: Field[] = ActionHelper.handleClick(field);
-
-    if (gameEnded) {
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
-    } else {
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
-    }
-
-    Renderer.drawAffectedFields(affectedFields);
+    ActionHelper.handleClick(field);
 });
 
 mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
@@ -160,25 +112,19 @@ mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
         return;
     }
 
-    const affectedFields: Field[] = ActionHelper.HandleFlag(field);
-    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields, flagsLeft)));
-
-    Renderer.drawAffectedFields(affectedFields);
+    ActionHelper.handleFlag(field);
 });
 
-hostRestartButton.addEventListener("click", (e: MouseEvent): void => {
-    Renderer.drawBackground();
-    Initializer.resetFields();
-    hostOverlay.style.display = "none";
-    gameStarted = false;
-    gameEnded = false;
-    HtmlHelper.setTimer(0);
-    flagsLeft = 99;
-    HtmlHelper.updateFlags(99);
-    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
+// Html Events
+restartButton.addEventListener("click", (e: MouseEvent): void => {
+    ActionHelper.restartGame();
 });
 
-hostTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+endGameButton.addEventListener("click", (e: MouseEvent): void => {
+    window.location.href = "/index.html";
+});
+
+testLatencyButton.addEventListener("click", (e: MouseEvent): void => {
     for (let i: number = 1; i < 4; i++) {
         latencyTestStamps[i] = performance.now();
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));

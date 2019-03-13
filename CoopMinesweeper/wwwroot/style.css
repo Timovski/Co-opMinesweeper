@@ -1,4 +1,4 @@
-.overlay {
+#overlay {
     display: table;
     background-color: rgba(145, 145, 145, 0.5);
     position: fixed;
@@ -9,15 +9,28 @@
     z-index: 2;
 }
 
-.overlay-info {
+#overlay-info {
     display: table-cell;
     vertical-align: middle;
     text-align: center;
     color: rgba(0, 0, 0, 1);
 }
 
-#host-overlay-game-id {
+#game-id-text {
     font-size: 60px;
+}
+
+#game-canvas {
+    width: 962px;
+    height: 514px;
+    position: absolute;
+    z-index: 0;
+}
+#mouse-canvas {
+    width: 962px;
+    height: 514px;
+    position: absolute;
+    z-index: 1;
 }
 
 .unselectable {

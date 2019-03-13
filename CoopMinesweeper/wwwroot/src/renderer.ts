@@ -78,20 +78,6 @@ abstract class Renderer {
         }
     }
 
-    public static revealField(field: Field, allFields: Field[]): void {
-        field.revealed = true;
-        allFields.push(field);
-
-        if (field.flag || field.type === FieldType.Bomb || field.type === FieldType.Number) {
-            return;
-        } else {
-            const surroundingFields: Field[] = Helpers.getSurroundingFieldsForReveal(field);
-            for (let i: number = 0, len: number = surroundingFields.length; i < len; i++) {
-                Renderer.revealField(surroundingFields[i], allFields);
-            }
-        }
-    }
-
     public static fillField(field: Field, fillStyle: string): void {
         gameCanvasContext.fillStyle = fillStyle;
         gameCanvasContext.fillRect(field.startX, field.startY, 30, 30);

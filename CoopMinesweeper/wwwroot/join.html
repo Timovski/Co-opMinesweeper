@@ -8,22 +8,20 @@
 </head>
 
 <body>
-    <div id="client-overlay" class="overlay">
-        <div id="client-overlay-info" class="overlay-info">
-            <button id="client-restart-button" style="display: none;">Restart</button>
-            <button id="client-end-game-button" style="display: none;">End Game</button>
+    <div id="overlay">
+        <div id="overlay-info">
+            <button id="restart-button" style="display: none;">Restart</button>
+            <button id="end-game-button" style="display: none;">End Game</button>
 
-            <div id="client-overlay-game-id">
-                <input type="text" id="game-id-input" size="4" maxlength="4">
-                <button id="connect-button">Connect</button>
-            </div>
+            <input type="text" id="game-id-input" size="4" maxlength="4">
+            <button id="connect-button">Connect</button>
 
-            <div id="client-overlay-status"></div>
+            <div id="overlay-status"></div>
         </div>
     </div>
 
     <div>
-        <button id="client-test-latency-button" style="display: none;">Test Latency</button>
+        <button id="test-latency-button" style="display: none;">Test Latency</button>
     </div>
 
     <div>
@@ -43,8 +41,9 @@
     <script src="simplepeer.min.js"></script>
     <script src="signalr.min.js"></script>
 
+    <script src="dist/globals.js"></script>
     <script src="dist/types.js"></script>
-    <script src="dist/htmlHelper.js"></script>
+    <script src="dist/gameHelper.js"></script>
     <script src="dist/renderer.js"></script>
     <script src="dist/initializer.js"></script>
     <script src="dist/helpers.js"></script>

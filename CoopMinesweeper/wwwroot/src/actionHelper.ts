@@ -1,5 +1,5 @@
 abstract class ActionHelper {
-    public static handleClick(field: Field): Field[] {
+    public static handleClick(field: Field): void {
         if (!gameStarted) {
             gameStarted = true;
 
@@ -7,8 +7,8 @@ abstract class ActionHelper {
             Initializer.createBombs();
             Initializer.createNumbers();
 
-            if (!timerIntervalId) { // todo: Because the timer could’ve been set by a flag before the game began
-                HtmlHelper.startTimer();
+            if (!timerIntervalId) {
+                GameHelper.startTimer();
             }
         }
 
@@ -16,33 +16,59 @@ abstract class ActionHelper {
         //     return [];
         // }
 
+        let affectedFields: Field[] = [];
         if (field.type === FieldType.Bomb) {
-            hostOverlay.style.display = "table";
-            hostRestartButton.style.display = "inline-block";
+            GameHelper.showRestartScreen();
 
-            gameEnded = true;
-            HtmlHelper.stopTimer();
-            return Initializer.getAllBombs();
+            GameHelper.stopTimer();
+            affectedFields = Initializer.getAllBombs();
+            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
+        } else {
+            ActionHelper.revealField(field, affectedFields);
+            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
         }
 
-        const affectedFields: Field[] = [];
-        Renderer.revealField(field, affectedFields);
-        return affectedFields;
+        Renderer.drawAffectedFields(affectedFields);
     }
 
-    public static HandleFlag(field: Field): Field[] {
+    public static handleFlag(field: Field): void {
         // if (field.revealed) {
         //     return [];
         // }
 
         if (!timerIntervalId) {
-            HtmlHelper.startTimer();
+            GameHelper.startTimer();
         }
 
         flagsLeft += field.flag ? 1 : -1;
-        HtmlHelper.updateFlags(flagsLeft);
+        GameHelper.setFlags(flagsLeft);
 
         field.flag = !field.flag;
-        return [field];
+
+        const affectedFields: Field[] = [field];
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields, flagsLeft)));
+        Renderer.drawAffectedFields(affectedFields);
+    }
+
+    public static restartGame(): void {
+        GameHelper.resetGame();
+
+        gameStarted = false;
+
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
+    }
+
+    private static revealField(field: Field, allFields: Field[]): void {
+        field.revealed = true;
+        allFields.push(field);
+
+        if (field.flag || field.type === FieldType.Bomb || field.type === FieldType.Number) {
+            return;
+        } else {
+            const surroundingFields: Field[] = Helpers.getSurroundingFieldsForReveal(field);
+            for (let i: number = 0, len: number = surroundingFields.length; i < len; i++) {
+                ActionHelper.revealField(surroundingFields[i], allFields);
+            }
+        }
     }
 }
