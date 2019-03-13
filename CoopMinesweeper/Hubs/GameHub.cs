@@ -22,6 +22,9 @@ namespace CoopMinesweeper.Hubs
         public void GetHostSignal(string gameId)
         {
             var hostConnectionId = _gameService.GetHostConnectionId(gameId);
+            if (string.IsNullOrWhiteSpace(hostConnectionId))
+                return;
+            
             Clients.Client(hostConnectionId).HostSignalPrompt(Context.ConnectionId);
         }
 

@@ -7,7 +7,9 @@ const clientOverlayGameId: HTMLElement = document.getElementById("client-overlay
 const gameIdInput: HTMLInputElement = document.getElementById("game-id-input") as HTMLInputElement;
 const connectButton: HTMLElement = document.getElementById("connect-button") as HTMLElement;
 const clientOverlayStatus: HTMLElement = document.getElementById("client-overlay-status") as HTMLElement;
+
 const clientRestartButton: HTMLElement = document.getElementById("client-restart-button") as HTMLElement;
+const clientEndGameButton: HTMLElement = document.getElementById("client-end-game-button") as HTMLElement;
 
 const clientTestLatencyButton: HTMLElement = document.getElementById("client-test-latency-button") as HTMLElement;
 
@@ -22,16 +24,23 @@ let hostConnectionId: string;
 clientOverlayStatus.innerText = "Waiting for game id...";
 
 clientSignalrConnection.start().then(() => {
-    clientOverlayStatus.innerText = "Connected to server successfully, insert game id...";
+    clientOverlayStatus.innerText = "Connected to server successfully, enter game id...";
     connected = true;
 }).catch((err: any) => {
     // todo: implement
 });
 
 const getHostSignal: () => void = (): void => {
+    if (!gameIdInput.value) {
+        return;
+    }
+
     clientGameId = gameIdInput.value;
     if (connected) {
-        clientSignalrConnection.invoke("GetHostSignal", clientGameId).catch((err: any) => {
+        clientSignalrConnection.invoke("GetHostSignal", clientGameId).then((sadsa: any) => {
+            clientOverlayStatus.innerText = "No game found for the provided game id…";
+        }).catch((err: any) => {
+            debugger;
             // todo: implement
         });
     } else {
@@ -48,8 +57,22 @@ gameIdInput.addEventListener("keyup", (event: KeyboardEvent) => { if (event.keyC
 connectButton.addEventListener("click", getHostSignal);
 
 clientPeer.on("error", (err: any): void => {
+    if (err.code === "ERR_ICE_CONNECTION_FAILURE") {
+        return;
+    }
     // todo: implement
     debugger;
+});
+
+clientPeer.on("close", () => {
+    clientOverlay.style.display = "table";
+    clientEndGameButton.style.display = "inline-block";
+    clientOverlayStatus.style.display = "block";
+    clientOverlayStatus.innerText = "Other player has disconnected :/";
+});
+
+clientEndGameButton.addEventListener("click", (e: MouseEvent): void => {
+    window.location.href = "/index.html";
 });
 
 clientSignalrConnection.onclose((error?: Error): void => {
@@ -80,7 +103,6 @@ clientPeer.on("connect", (): void => {
     clientOverlayStatus.style.display = "none";
 
     clientSignalrConnection.stop();
-    clientTesttency();
 });
 
 clientPeer.on("data", (data: any): void => {
@@ -165,12 +187,12 @@ clientRestartButton.addEventListener("click", (e: MouseEvent): void => {
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Reset)));
 });
 
-const clientTesttency: () => void = (): void => {
+clientTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
     for (let i: number = 1; i < 4; i++) {
         latencyTestStamps[i] = performance.now();
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyTest, i)));
     }
-};
+});
 
 const clientProcessLatency: (stamp: number) => void = (stamp: number): void => {
     const t0: number = latencyTestStamps[stamp];
@@ -179,8 +201,6 @@ const clientProcessLatency: (stamp: number) => void = (stamp: number): void => {
 
     if (stamp === 3) {
         averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
-        // alert(`The latency is ${averageLatency} milliseconds.`);
+        alert(`The latency is ${averageLatency} milliseconds.`);
     }
 };
-
-// clientTestLatencyButton.addEventListener("click", clientTesttency);

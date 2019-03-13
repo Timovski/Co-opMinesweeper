@@ -5,7 +5,9 @@ Initializer.initFields();
 const hostOverlay: HTMLElement = document.getElementById("host-overlay") as HTMLElement;
 const hostOverlayGameId: HTMLElement = document.getElementById("host-overlay-game-id") as HTMLElement;
 const hostOverlayStatus: HTMLElement = document.getElementById("host-overlay-status") as HTMLElement;
+
 const hostRestartButton: HTMLElement = document.getElementById("host-restart-button") as HTMLElement;
+const hostEndGameButton: HTMLElement = document.getElementById("host-end-game-button") as HTMLElement;
 
 const hostTestLatencyButton: HTMLElement = document.getElementById("host-test-latency-button") as HTMLElement;
 
@@ -19,8 +21,22 @@ let hostSignal: string;
 hostOverlayStatus.innerText = "Waiting for signal...";
 
 peer.on("error", (err: any): void => {
+    if (err.code === "ERR_ICE_CONNECTION_FAILURE") {
+        return;
+    }
     debugger;
     // todo: implement
+});
+
+peer.on("close", () => {
+    hostOverlay.style.display = "table";
+    hostEndGameButton.style.display = "inline-block";
+    hostOverlayStatus.style.display = "block";
+    hostOverlayStatus.innerText = "Other player has disconnected :/";
+});
+
+hostEndGameButton.addEventListener("click", (e: MouseEvent): void => {
+    window.location.href = "/index.html";
 });
 
 signalrConnection.onclose((error?: Error): void => {
@@ -162,12 +178,12 @@ hostRestartButton.addEventListener("click", (e: MouseEvent): void => {
     peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
 });
 
-// hostTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
-//     for (let i: number = 1; i < 4; i++) {
-//         latencyTestStamps[i] = performance.now();
-//         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));
-//     }
-// });
+hostTestLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+    for (let i: number = 1; i < 4; i++) {
+        latencyTestStamps[i] = performance.now();
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));
+    }
+});
 
 const hostProcessLatency: (stamp: number) => void = (stamp: number): void => {
     const t0: number = latencyTestStamps[stamp];
@@ -176,6 +192,6 @@ const hostProcessLatency: (stamp: number) => void = (stamp: number): void => {
 
     if (stamp === 3) {
         averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
-        // alert(`The latency is ${averageLatency} milliseconds.`);
+        alert(`The latency is ${averageLatency} milliseconds.`);
     }
 };

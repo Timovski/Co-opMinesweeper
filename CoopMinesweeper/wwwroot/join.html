@@ -10,18 +10,21 @@
 <body>
     <div id="client-overlay" class="overlay">
         <div id="client-overlay-info" class="overlay-info">
+            <button id="client-restart-button" style="display: none;">Restart</button>
+            <button id="client-end-game-button" style="display: none;">End Game</button>
+
             <div id="client-overlay-game-id">
                 <input type="text" id="game-id-input" size="4" maxlength="4">
                 <button id="connect-button">Connect</button>
             </div>
+
             <div id="client-overlay-status"></div>
-            <button id="client-restart-button" style="display: none;">Restart</button>
         </div>
     </div>
 
-    <!-- <div>
-        <button id="client-test-latency-button">Test Latency</button>
-    </div> -->
+    <div>
+        <button id="client-test-latency-button" style="display: none;">Test Latency</button>
+    </div>
 
     <div>
         <a href="index.html">Back</a>
