@@ -41,7 +41,7 @@ peer.on("data", (data: any): void => {
     if (dataObject.clientEventType === ClientEventType.LatencyTest) {
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyResponse, dataObject.stamp)));
     } else if (dataObject.clientEventType === ClientEventType.LatencyResponse) {
-        hostProcessLatency(dataObject.stamp);
+        Helpers.processLatency(dataObject.stamp);
     } else if (dataObject.clientEventType === ClientEventType.Move) {
         Renderer.drawMouse(dataObject.mousePosition);
     } else if (dataObject.clientEventType === ClientEventType.Click) {
@@ -138,16 +138,5 @@ testLatencyButton.addEventListener("click", (e: MouseEvent): void => {
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));
     }
 });
-
-const hostProcessLatency: (stamp: number) => void = (stamp: number): void => {
-    const t0: number = latencyTestStamps[stamp];
-    const t1: number = performance.now();
-    latencyTestResults[stamp] = t1 - t0;
-
-    if (stamp === 3) {
-        averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
-        alert(`The latency is ${averageLatency} milliseconds.`);
-    }
-};
 
 // #endregion

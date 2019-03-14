@@ -36,6 +36,7 @@ abstract class GameHelper {
     public static showEndGameScreen(): void {
         overlay.style.display = "table";
         endGameButton.style.display = "inline-block";
+        restartButton.style.display = "none";
         overlayStatus.style.display = "block";
         overlayStatus.innerText = "Other player has disconnected :/";
     }

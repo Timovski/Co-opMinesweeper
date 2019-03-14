@@ -30,37 +30,13 @@ clientPeer.on("data", (data: any): void => {
     if (serverDataObject.serverEventType === ServerEventType.LatencyTest) {
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyResponse, serverDataObject.stamp)));
     } else if (serverDataObject.serverEventType === ServerEventType.LatencyResponse) {
-        clientProcessLatency(serverDataObject.stamp);
+        Helpers.processLatency(serverDataObject.stamp);
     } else if (serverDataObject.serverEventType === ServerEventType.Move) {
         Renderer.drawMouse(serverDataObject.mousePosition);
     } else if (serverDataObject.serverEventType === ServerEventType.Game) {
-        for (let i: number = 0, len: number = serverDataObject.affectedFields.length; i < len; i++) {
-            const field: Field = serverDataObject.affectedFields[i];
-
-            // todo: This should happen for client only
-            matrix[field.row][field.column] = field;
-
-            // todo: Think of a better solution for this problem
-            if (previousActiveField && previousActiveField.row === field.row && previousActiveField.column === field.column) {
-                previousActiveField = field;
-            }
-        }
-
-        Renderer.drawAffectedFields(serverDataObject.affectedFields);
-
-        if (serverDataObject.flagsLeft) {
-            GameHelper.setFlags(serverDataObject.flagsLeft);
-        }
-
-        if (!timerIntervalId) {
-            GameHelper.startTimer();
-        }
+        ClientHelper.handleGame(serverDataObject.affectedFields, serverDataObject.flagsLeft);
     } else if (serverDataObject.serverEventType === ServerEventType.GameOver) {
-        GameHelper.showRestartScreen();
-        GameHelper.stopTimer();
-        GameHelper.setTimer(serverDataObject.elapsedTime!);
-
-        Renderer.drawAffectedFields(serverDataObject.affectedFields);
+        ClientHelper.handleGameOver(serverDataObject.affectedFields, serverDataObject.elapsedTime!);
     } else if (serverDataObject.serverEventType === ServerEventType.Reset) {
         GameHelper.resetGame();
     }
@@ -148,7 +124,6 @@ const getHostSignal: () => void = (): void => {
         clientSignalrConnection.invoke("GetHostSignal", gameIdInput.value).then((sadsa: any) => {
             overlayStatus.innerText = "No game found for the provided game id…";
         }).catch((err: any) => {
-            debugger;
             // todo: implement
         });
     } else {
@@ -173,16 +148,5 @@ testLatencyButton.addEventListener("click", (e: MouseEvent): void => {
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyTest, i)));
     }
 });
-
-const clientProcessLatency: (stamp: number) => void = (stamp: number): void => {
-    const t0: number = latencyTestStamps[stamp];
-    const t1: number = performance.now();
-    latencyTestResults[stamp] = t1 - t0;
-
-    if (stamp === 3) {
-        averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
-        alert(`The latency is ${averageLatency} milliseconds.`);
-    }
-};
 
 // #endregion

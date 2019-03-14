@@ -7,4 +7,15 @@ abstract class Helpers {
     public static getRandomInt(min: number, max: number): number {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
+
+    public static processLatency(stamp: number): void {
+        const t0: number = latencyTestStamps[stamp];
+        const t1: number = performance.now();
+        latencyTestResults[stamp] = t1 - t0;
+
+        if (stamp === 3) {
+            averageLatency = (latencyTestResults[1] + latencyTestResults[2] + latencyTestResults[3]) / 3;
+            alert(`The latency is ${averageLatency} milliseconds.`);
+        }
+    }
 }
