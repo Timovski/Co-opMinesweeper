@@ -1,11 +1,11 @@
-abstract class ActionHelper {
+abstract class HostHelper {
     public static handleClick(field: Field): void {
         if (!gameStarted) {
             gameStarted = true;
 
-            Initializer.markStartingFields(field);
-            Initializer.createBombs();
-            Initializer.createNumbers();
+            FieldHelper.markStartingFields(field);
+            FieldHelper.createBombs();
+            FieldHelper.createNumbers();
 
             if (!timerIntervalId) {
                 GameHelper.startTimer();
@@ -21,10 +21,10 @@ abstract class ActionHelper {
             GameHelper.showRestartScreen();
 
             GameHelper.stopTimer();
-            affectedFields = Initializer.getAllBombs();
+            affectedFields = FieldHelper.getAllBombs();
             peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
         } else {
-            ActionHelper.revealField(field, affectedFields);
+            FieldHelper.getFieldsForReveal(field, affectedFields);
             peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
         }
 
@@ -52,23 +52,7 @@ abstract class ActionHelper {
 
     public static restartGame(): void {
         GameHelper.resetGame();
-
         gameStarted = false;
-
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
-    }
-
-    private static revealField(field: Field, allFields: Field[]): void {
-        field.revealed = true;
-        allFields.push(field);
-
-        if (field.flag || field.type === FieldType.Bomb || field.type === FieldType.Number) {
-            return;
-        } else {
-            const surroundingFields: Field[] = Helpers.getSurroundingFieldsForReveal(field);
-            for (let i: number = 0, len: number = surroundingFields.length; i < len; i++) {
-                ActionHelper.revealField(surroundingFields[i], allFields);
-            }
-        }
     }
 }

@@ -1,17 +1,17 @@
 Renderer.drawBackground();
-Initializer.initFields();
+FieldHelper.initializeFields();
 
 let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false });
 let clientSignalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub", { logger: signalR.LogLevel.Information }).build();
 clientSignalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
 let connected: boolean = false;
-let clientGameId: string;
 let hostConnectionId: string;
 
 overlayStatus.innerText = "Waiting for game id...";
 
-// SimplePeer
+// #region SimplePeer
+
 clientPeer.on("signal", (data: any): void => {
     const clientSignal: string = JSON.stringify(data);
 
@@ -78,7 +78,10 @@ clientPeer.on("error", (err: any): void => {
     // todo: implement
 });
 
-// Signalr
+// #endregion
+
+// #region SignalR
+
 clientSignalrConnection.start().then(() => {
     overlayStatus.innerText = "Connected to server successfully, enter game id...";
     connected = true;
@@ -95,18 +98,21 @@ clientSignalrConnection.onclose((error?: Error): void => {
     // todo: implement
 });
 
-// Canvas Events
+// #endregion
+
+// #region Canvas Events
+
 mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Move, mousePosition)));
 
-    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
     Renderer.renderMouseMove(field);
 });
 
 mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
 
     if (field.revealed || field.flag) {
         return;
@@ -118,7 +124,7 @@ mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
 mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     e.preventDefault();
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
 
     if (field.revealed) {
         return;
@@ -127,15 +133,19 @@ mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Flag, mousePosition)));
 });
 
-// Html Events
+// #endregion
+
+// #region Html Events
+
 const getHostSignal: () => void = (): void => {
-    if (!gameIdInput.value) {
+    const validId: boolean = /^\d{4}$/.test(gameIdInput.value);
+
+    if (!validId) {
         return;
     }
 
-    clientGameId = gameIdInput.value;
     if (connected) {
-        clientSignalrConnection.invoke("GetHostSignal", clientGameId).then((sadsa: any) => {
+        clientSignalrConnection.invoke("GetHostSignal", gameIdInput.value).then((sadsa: any) => {
             overlayStatus.innerText = "No game found for the provided game id…";
         }).catch((err: any) => {
             debugger;
@@ -174,3 +184,5 @@ const clientProcessLatency: (stamp: number) => void = (stamp: number): void => {
         alert(`The latency is ${averageLatency} milliseconds.`);
     }
 };
+
+// #endregion

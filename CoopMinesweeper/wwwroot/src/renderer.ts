@@ -86,7 +86,7 @@ abstract class Renderer {
     public static drawMouse(position: MousePosition): void {
         mouseCanvasContext.clearRect(0, 0, mouseCanvas.width, mouseCanvas.height);
 
-        const field: Field = Helpers.getActiveField(position.x, position.y);
+        const field: Field = FieldHelper.getField(position.x, position.y);
         mouseCanvasContext.fillStyle = "rgba(228, 0, 225, 0.4)";
         mouseCanvasContext.fillRect(field.startX, field.startY, 30, 30);
 

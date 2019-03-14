@@ -1,11 +1,17 @@
 abstract class GameHelper {
+    // #region Game
+
     public static resetGame(): void {
         Renderer.drawBackground();
-        Initializer.resetFields();
+        FieldHelper.resetFields();
         GameHelper.setTimer(0);
         GameHelper.setFlags(99);
         GameHelper.hideOverlay();
     }
+
+    // #endregion
+
+    // #region Screens
 
     public static hideOverlay(): void {
         overlay.style.display = "none";
@@ -34,10 +40,18 @@ abstract class GameHelper {
         overlayStatus.innerText = "Other player has disconnected :/";
     }
 
+    // #endregion
+
+    // #region Flags
+
     public static setFlags(numberOfFlagsLeft: number): void {
         flagsLeft = numberOfFlagsLeft;
         flagsElement.innerText = flagsLeft.toString();
     }
+
+    // #endregion
+
+    // #region Timer
 
     public static startTimer(): void {
         timerIntervalId = setInterval(() => {
@@ -57,4 +71,6 @@ abstract class GameHelper {
         elapsedTime = seconds;
         timerElement.innerText = `00${seconds}`.slice(-3);
     }
+
+    // #endregion
 }

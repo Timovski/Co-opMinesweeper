@@ -1,17 +1,17 @@
 Renderer.drawBackground();
-Initializer.initFields();
+FieldHelper.initializeFields();
 
 let peer: SimplePeer = new SimplePeer({ initiator: true, trickle: false });
 let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub", { logger: signalR.LogLevel.Information }).build();
 signalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
-let hostGameId: string;
 let hostSignal: string;
 let gameStarted: boolean = false;
 
 overlayStatus.innerText = "Waiting for signal...";
 
-// SimplePeer
+// #region SimplePeer
+
 peer.on("signal", (data: any): void => {
     hostSignal = JSON.stringify(data);
 
@@ -21,7 +21,6 @@ peer.on("signal", (data: any): void => {
         overlayStatus.innerText = "Connected to server successfully, creating game...";
 
         signalrConnection.invoke("CreateGame").then((newGameId: string) => {
-            hostGameId = newGameId;
             gameIdText.innerText = `Game Id: ${newGameId}`;
             overlayStatus.innerText = "Waiting for other player to join...";
         }).catch((err: any) => {
@@ -46,13 +45,13 @@ peer.on("data", (data: any): void => {
     } else if (dataObject.clientEventType === ClientEventType.Move) {
         Renderer.drawMouse(dataObject.mousePosition);
     } else if (dataObject.clientEventType === ClientEventType.Click) {
-        const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
-        ActionHelper.handleClick(field);
+        const field: Field = FieldHelper.getField(dataObject.mousePosition.x, dataObject.mousePosition.y);
+        HostHelper.handleClick(field);
     } else if (dataObject.clientEventType === ClientEventType.Flag) {
-        const field: Field = Helpers.getActiveField(dataObject.mousePosition.x, dataObject.mousePosition.y);
-        ActionHelper.handleFlag(field);
+        const field: Field = FieldHelper.getField(dataObject.mousePosition.x, dataObject.mousePosition.y);
+        HostHelper.handleFlag(field);
     } else if (dataObject.clientEventType === ClientEventType.Reset) {
-        ActionHelper.restartGame();
+        HostHelper.restartGame();
     }
 });
 
@@ -68,7 +67,10 @@ peer.on("error", (err: any): void => {
     // todo: implement
 });
 
-// Signalr
+// #endregion
+
+// #region SignalR
+
 signalrConnection.on("HostSignalPrompt", (clientConnectionId: string) => {
     signalrConnection.invoke("ReceiveHostSignal", clientConnectionId, hostSignal).catch((err: any) => {
         // todo: implement
@@ -83,41 +85,47 @@ signalrConnection.onclose((error?: Error): void => {
     // todo: implement
 });
 
-// Canvas Events
+// #endregion
+
+// #region Canvas Events
+
 mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
     peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Move, mousePosition)));
 
-    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
     Renderer.renderMouseMove(field);
 });
 
 mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
 
     if (field.revealed || field.flag) {
         return;
     }
 
-    ActionHelper.handleClick(field);
+    HostHelper.handleClick(field);
 });
 
 mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     e.preventDefault();
     const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
-    const field: Field = Helpers.getActiveField(mousePosition.x, mousePosition.y);
+    const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
 
     if (field.revealed) {
         return;
     }
 
-    ActionHelper.handleFlag(field);
+    HostHelper.handleFlag(field);
 });
 
-// Html Events
+// #endregion
+
+// #region Html Events
+
 restartButton.addEventListener("click", (e: MouseEvent): void => {
-    ActionHelper.restartGame();
+    HostHelper.restartGame();
 });
 
 endGameButton.addEventListener("click", (e: MouseEvent): void => {
@@ -141,3 +149,5 @@ const hostProcessLatency: (stamp: number) => void = (stamp: number): void => {
         alert(`The latency is ${averageLatency} milliseconds.`);
     }
 };
+
+// #endregion
