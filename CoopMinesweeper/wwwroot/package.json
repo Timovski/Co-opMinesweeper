@@ -1,6 +1,6 @@
 {
   "name": "coop-minesweeper",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "A co-op Minesweeper variant.",
   "main": "/dist/app.js",
   "directories": {

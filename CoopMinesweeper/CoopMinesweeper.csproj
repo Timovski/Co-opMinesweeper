@@ -1,9 +1,17 @@
-<Project Sdk="Microsoft.NET.Sdk.Web">
+﻿<Project Sdk="Microsoft.NET.Sdk.Web">
 
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
     <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
+    <Version>0.0.2</Version>
+    <Authors>Stefan Timovski</Authors>
+    <PackageProjectUrl>https://github.com/Timovski/Co-opMinesweeper</PackageProjectUrl>
+    <PackageLicenseUrl>https://github.com/Timovski/Co-opMinesweeper/blob/master/LICENSE.md</PackageLicenseUrl>
+    <RepositoryUrl>https://github.com/Timovski/Co-opMinesweeper</RepositoryUrl>
+    <RepositoryType>git</RepositoryType>
+    <Description>A 2-player cooperative browser-based variant of the game Minesweeper.</Description>
+    <PackageTags>browser;cooperative;gane</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
