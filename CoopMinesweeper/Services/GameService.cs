@@ -1,4 +1,5 @@
-﻿using Npgsql;
+﻿using Microsoft.Extensions.Configuration;
+using Npgsql;
 
 namespace CoopMinesweeper.Services
 {
@@ -11,12 +12,17 @@ namespace CoopMinesweeper.Services
 
     public class GameService : IGameService
     {
-        private const string ConnString = "Server=localhost;Port=5432;Database=CoopMinesweeper;User ID=postgres;Password=admin;";
+        private readonly string _connString;
+
+        public GameService(IConfiguration configuration)
+        {
+            _connString = configuration["ConnectionStrings:DefaultConnectionString"];
+        }
 
         public string CreateGame(string hostConnectionId)
         {
             string gameId;
-            using (var conn = new NpgsqlConnection(ConnString))
+            using (var conn = new NpgsqlConnection(_connString))
             {
                 conn.Open();
 
@@ -35,7 +41,7 @@ namespace CoopMinesweeper.Services
         public string GetHostConnectionId(string gameId)
         {
             string hostConnectionId;
-            using (var conn = new NpgsqlConnection(ConnString))
+            using (var conn = new NpgsqlConnection(_connString))
             {
                 conn.Open();
 
@@ -53,7 +59,7 @@ namespace CoopMinesweeper.Services
         {
             try
             {
-                using (var conn = new NpgsqlConnection(ConnString))
+                using (var conn = new NpgsqlConnection(_connString))
                 {
                     conn.Open();
 

@@ -10,6 +10,8 @@ const latencyTestStamps: number[] = [];
 const latencyTestResults: number[] = [];
 let averageLatency: number;
 
+const baseSignalrUrl: string = location.host === "coopminesweeper.com" ? "https://api.coopminesweeper.com" : "";
+
 // Html globals
 let gameCanvas: HTMLCanvasElement = document.getElementById("game-canvas") as HTMLCanvasElement;
 let gameCanvasContext: CanvasRenderingContext2D = gameCanvas.getContext("2d") as CanvasRenderingContext2D;

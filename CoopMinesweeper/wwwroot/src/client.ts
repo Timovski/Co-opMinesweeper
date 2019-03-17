@@ -2,7 +2,7 @@ Renderer.drawBackground();
 FieldHelper.initializeFields();
 
 let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false });
-let clientSignalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl("/gameHub", { logger: signalR.LogLevel.None }).build();
+let clientSignalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl(baseSignalrUrl + "/gameHub", { logger: signalR.LogLevel.None }).build();
 clientSignalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
 let connected: boolean = false;

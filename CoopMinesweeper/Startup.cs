@@ -34,6 +34,19 @@ namespace CoopMinesweeper
                 options.KeepAliveInterval = TimeSpan.FromSeconds(150);
             });
 
+            services.AddCors(options =>
+            {
+                options.AddPolicy("AllowCoopMinesweeper", builder =>
+                {
+                    builder.WithOrigins(Configuration["AppSettings:CoopMinesweeperUrl"],
+                                        Configuration["AppSettings:CoopMinesweeperWwwUrl"])
+                           .AllowAnyMethod()
+                           .AllowAnyHeader()
+                           .AllowCredentials()
+                           .SetPreflightMaxAge(TimeSpan.FromDays(20));
+                });
+            });
+
             services.AddSingleton<IGameService, GameService>();
             services.AddHostedService<TimedHostedService>();
         }
@@ -51,7 +64,7 @@ namespace CoopMinesweeper
                 app.UseHsts();
             }
 
-            app.UseHttpsRedirection();
+            app.UseCors("AllowCoopMinesweeper");
             app.UseStaticFiles();
             app.UseMvc();
             app.UseSignalR(routes =>

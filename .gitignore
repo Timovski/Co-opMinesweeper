@@ -262,3 +262,6 @@ __pycache__/
 
 # tsc build output
 dist/
+
+# production json
+appsettings.Production.json
