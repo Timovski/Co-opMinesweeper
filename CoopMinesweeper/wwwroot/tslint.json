@@ -3,6 +3,7 @@
     "rules": {
         "no-debugger": false,
         "unified-signatures": false,
+        "object-literal-sort-keys": false,
         "max-classes-per-file": [
             true,
             10

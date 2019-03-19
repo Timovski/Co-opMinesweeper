@@ -5,6 +5,12 @@ let peer: SimplePeer = new SimplePeer({ initiator: true, trickle: false });
 let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl(baseSignalrUrl + "/gameHub", { logger: signalR.LogLevel.None }).build();
 signalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
+// const originalDebug: any = peer._debug;
+// peer._debug = function () {
+//     console.log(arguments);
+//     originalDebug(arguments);
+// };
+
 let hostSignal: string;
 let gameStarted: boolean = false;
 
@@ -56,10 +62,12 @@ peer.on("data", (data: any): void => {
 });
 
 peer.on("close", () => {
+    debugger;
     GameHelper.showEndGameScreen();
 });
 
 peer.on("error", (err: any): void => {
+    debugger;
     if (err.code === "ERR_ICE_CONNECTION_FAILURE") {
         return;
     }
