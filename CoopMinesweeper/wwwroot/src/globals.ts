@@ -11,6 +11,7 @@ const latencyTestResults: number[] = [];
 let averageLatency: number;
 
 const baseSignalrUrl: string = location.host.indexOf("coopminesweeper.com") !== -1 ? "https://api.coopminesweeper.com" : "";
+const debugSimplePeer: boolean = false;
 
 // Html globals
 let gameCanvas: HTMLCanvasElement = document.getElementById("game-canvas") as HTMLCanvasElement;

@@ -4,6 +4,10 @@
         "no-debugger": false,
         "unified-signatures": false,
         "object-literal-sort-keys": false,
+        "space-before-function-paren": false,
+        "no-console": [
+            false
+        ],
         "max-classes-per-file": [
             true,
             10

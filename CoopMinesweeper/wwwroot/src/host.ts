@@ -5,11 +5,14 @@ let peer: SimplePeer = new SimplePeer({ initiator: true, trickle: false });
 let signalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl(baseSignalrUrl + "/gameHub", { logger: signalR.LogLevel.None }).build();
 signalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
-// const originalDebug: any = peer._debug;
-// peer._debug = function () {
-//     console.log(arguments);
-//     originalDebug(arguments);
-// };
+if (debugSimplePeer) {
+    const originalDebug: any = peer._debug;
+    peer._debug = function (): void {
+        const self: SimplePeer = this;
+        console.log(arguments);
+        originalDebug.apply(self, arguments);
+    };
+}
 
 let hostSignal: string;
 let gameStarted: boolean = false;
