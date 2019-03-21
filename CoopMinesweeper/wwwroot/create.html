@@ -9,7 +9,7 @@
 
 <body>
     <div id="overlay">
-        <div id="overlay-info">
+        <div id="center-div">
             <button id="restart-button" style="display: none;">Restart</button>
             <button id="end-game-button" style="display: none;">End Game</button>
 
@@ -23,19 +23,40 @@
         <button id="test-latency-button" style="display: none;">Test Latency</button>
     </div>
 
-    <div>
-        <a href="index.html">Back</a>
-        <span id="flags">99</span>
-        &nbsp; &nbsp; &nbsp;
-        <span id="timer">000</span>
-    </div>
+    <div id="container">
+        <div id="left-container">
+            <div id="left-container-content">
+                <button onclick="window.location.href = '/index.html'">Back</button>
+            </div>
+        </div>
 
-    <div>
-        <canvas id="game-canvas"></canvas>
-        <canvas id="mouse-canvas"></canvas>
-    </div>
+        <div id="center-container">
+            <div id="header">
+                <div id="flags-container">
+                    <span id="flags">99</span>
+                </div>
+                <div id="timer-container">
+                    <span id="timer">000</span>
+                </div>
+            </div>
+            <div style="width: 962px; height: 514px;">
+                <canvas id="game-canvas"></canvas>
+                <canvas id="mouse-canvas"></canvas>
+            </div>
+        </div>
 
-    <div></div>
+        <div id="right-container">
+            <div id="right-container-content">
+            </div>
+        </div>
+    </div>
+    <div id="footer">
+        Powered by: <a href="https://github.com/feross/simple-peer" target="_blank">simple-peer</a> |
+        <a href="https://github.com/Timovski/Co-opMinesweeper" target="_blank">
+            <span>GitHub</span>
+            <img src="GitHub-Mark-32px.png" class="github-logo" />
+        </a>
+    </div>
 
     <script src="simplepeer.min.js"></script>
     <script src="signalr.min.js"></script>

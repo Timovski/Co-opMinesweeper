@@ -135,15 +135,15 @@ mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
 
 // #region Html Events
 
-restartButton.addEventListener("click", (e: MouseEvent): void => {
+restartButton.addEventListener("click", (): void => {
     HostHelper.restartGame();
 });
 
-endGameButton.addEventListener("click", (e: MouseEvent): void => {
+endGameButton.addEventListener("click", (): void => {
     window.location.href = "/index.html";
 });
 
-testLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+testLatencyButton.addEventListener("click", (): void => {
     for (let i: number = 1; i < 4; i++) {
         latencyTestStamps[i] = performance.now();
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.LatencyTest, i)));

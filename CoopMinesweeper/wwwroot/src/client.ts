@@ -143,15 +143,15 @@ const getHostSignal: () => void = (): void => {
 gameIdInput.addEventListener("keyup", (event: KeyboardEvent) => { if (event.keyCode === 13) { getHostSignal(); } });
 connectButton.addEventListener("click", getHostSignal);
 
-endGameButton.addEventListener("click", (e: MouseEvent): void => {
-    window.location.href = "/index.html";
-});
-
-restartButton.addEventListener("click", (e: MouseEvent): void => {
+restartButton.addEventListener("click", (): void => {
     clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Reset)));
 });
 
-testLatencyButton.addEventListener("click", (e: MouseEvent): void => {
+endGameButton.addEventListener("click", (): void => {
+    window.location.href = "/index.html";
+});
+
+testLatencyButton.addEventListener("click", (): void => {
     for (let i: number = 1; i < 4; i++) {
         latencyTestStamps[i] = performance.now();
         clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.LatencyTest, i)));

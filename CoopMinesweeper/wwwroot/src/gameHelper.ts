@@ -29,12 +29,12 @@ abstract class GameHelper {
     }
 
     public static showRestartScreen(): void {
-        overlay.style.display = "table";
+        overlay.style.display = "block";
         restartButton.style.display = "inline-block";
     }
 
     public static showEndGameScreen(): void {
-        overlay.style.display = "table";
+        overlay.style.display = "block";
         endGameButton.style.display = "inline-block";
         restartButton.style.display = "none";
         overlayStatus.style.display = "block";
