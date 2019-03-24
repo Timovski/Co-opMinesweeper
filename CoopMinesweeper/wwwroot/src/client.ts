@@ -1,5 +1,6 @@
 Renderer.drawBackground();
 FieldHelper.initializeFields();
+Helpers.scrollIntoView();
 
 let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false });
 let clientSignalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl(baseSignalrUrl + "/gameHub", { logger: signalR.LogLevel.None }).build();

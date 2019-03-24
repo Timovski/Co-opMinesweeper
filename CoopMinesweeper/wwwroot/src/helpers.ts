@@ -8,6 +8,14 @@ abstract class Helpers {
         return Math.floor(Math.random() * (max - min + 1)) + min;
     }
 
+    public static scrollIntoView(): void {
+        const screenWidth: number = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        if (screenWidth && screenWidth < 1162) {
+            const position: number = 581 - (screenWidth / 2);
+            scrollTo(position, 0);
+        }
+    }
+
     public static processLatency(stamp: number): void {
         const t0: number = latencyTestStamps[stamp];
         const t1: number = performance.now();
