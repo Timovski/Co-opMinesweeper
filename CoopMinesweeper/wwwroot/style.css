@@ -45,18 +45,18 @@ body {
     text-align: center;
 }
 
-#main div {
+#main > div {
     text-align: left;
 }
 
 #content-holder {
-    width: 1162px; 
-    display: inline-block; 
+    width: 1162px;
+    display: inline-block;
 }
 
 #left-column, #right-column {
-    width: 100px; 
-    display: inline-block; 
+    width: 100px;
+    display: inline-block;
     vertical-align: top;
 }
 
