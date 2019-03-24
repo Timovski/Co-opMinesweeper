@@ -47,7 +47,7 @@ class ClientDataObject {
     public stamp!: number;
     public clientEventType: ClientEventType;
 
-    constructor(clientEventType: ClientEventType.Reset);
+    constructor(clientEventType: ClientEventType.NewGame);
     constructor(clientEventType: ClientEventType.Move | ClientEventType.Click | ClientEventType.Flag, mousePosition: MousePosition);
     constructor(clientEventType: ClientEventType.LatencyTest | ClientEventType.LatencyResponse, stamp: number);
     constructor(clientEventType: ClientEventType, arg?: MousePosition | number) {
@@ -67,7 +67,7 @@ enum ClientEventType {
     Move,
     Click,
     Flag,
-    Reset,
+    NewGame,
     LatencyTest,
     LatencyResponse
 }
@@ -80,10 +80,11 @@ class ServerDataObject {
     public elapsedTime!: number | undefined;
     public serverEventType: ServerEventType;
 
-    constructor(serverEventType: ServerEventType.Reset);
+    constructor(serverEventType: ServerEventType.NewGame);
     constructor(serverEventType: ServerEventType.Move, mousePosition: MousePosition);
     constructor(serverEventType: ServerEventType.LatencyTest | ServerEventType.LatencyResponse, stamp: number);
     constructor(serverEventType: ServerEventType.Game, affectedFields: Field[], flagsLeft?: number);
+    constructor(serverEventType: ServerEventType.GameWon, affectedFields: Field[], elapsedTime: number);
     constructor(serverEventType: ServerEventType.GameOver, affectedFields: Field[], elapsedTime: number);
     constructor(serverEventType: ServerEventType, arg?: MousePosition | number | Field[], arg2?: number) {
         if (arg) {
@@ -108,8 +109,9 @@ class ServerDataObject {
 enum ServerEventType {
     Move,
     Game,
+    GameWon,
     GameOver,
-    Reset,
+    NewGame,
     LatencyTest,
     LatencyResponse
 }

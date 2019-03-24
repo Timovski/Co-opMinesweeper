@@ -44,9 +44,11 @@ clientPeer.on("data", (data: any): void => {
         Renderer.drawMouse(serverDataObject.mousePosition);
     } else if (serverDataObject.serverEventType === ServerEventType.Game) {
         ClientHelper.handleGame(serverDataObject.affectedFields, serverDataObject.flagsLeft);
+    } else if (serverDataObject.serverEventType === ServerEventType.GameWon) {
+        ClientHelper.handleGameWon(serverDataObject.affectedFields, serverDataObject.elapsedTime!);
     } else if (serverDataObject.serverEventType === ServerEventType.GameOver) {
         ClientHelper.handleGameOver(serverDataObject.affectedFields, serverDataObject.elapsedTime!);
-    } else if (serverDataObject.serverEventType === ServerEventType.Reset) {
+    } else if (serverDataObject.serverEventType === ServerEventType.NewGame) {
         GameHelper.resetGame();
     }
 });
@@ -143,8 +145,8 @@ const getHostSignal: () => void = (): void => {
 gameIdInput.addEventListener("keyup", (event: KeyboardEvent) => { if (event.keyCode === 13) { getHostSignal(); } });
 connectButton.addEventListener("click", getHostSignal);
 
-restartButton.addEventListener("click", (): void => {
-    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Reset)));
+newGameButton.addEventListener("click", (): void => {
+    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.NewGame)));
 });
 
 endGameButton.addEventListener("click", (): void => {

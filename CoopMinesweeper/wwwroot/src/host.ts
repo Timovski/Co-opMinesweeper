@@ -59,8 +59,8 @@ peer.on("data", (data: any): void => {
     } else if (dataObject.clientEventType === ClientEventType.Flag) {
         const field: Field = FieldHelper.getField(dataObject.mousePosition.x, dataObject.mousePosition.y);
         HostHelper.handleFlag(field);
-    } else if (dataObject.clientEventType === ClientEventType.Reset) {
-        HostHelper.restartGame();
+    } else if (dataObject.clientEventType === ClientEventType.NewGame) {
+        HostHelper.startNewGame();
     }
 });
 
@@ -135,8 +135,8 @@ mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
 
 // #region Html Events
 
-restartButton.addEventListener("click", (): void => {
-    HostHelper.restartGame();
+newGameButton.addEventListener("click", (): void => {
+    HostHelper.startNewGame();
 });
 
 endGameButton.addEventListener("click", (): void => {

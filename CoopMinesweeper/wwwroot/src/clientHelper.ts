@@ -22,9 +22,17 @@ abstract class ClientHelper {
         }
     }
 
-    public static handleGameOver(affectedFields: Field[], elapsedTime: number): void {
-        GameHelper.showRestartScreen();
+    public static handleGameWon(affectedFields: Field[], elapsedTime: number): void {
         GameHelper.stopTimer();
+        GameHelper.showNewGameScreen();
+        GameHelper.setTimer(elapsedTime!);
+
+        Renderer.drawAffectedFields(affectedFields);
+    }
+
+    public static handleGameOver(affectedFields: Field[], elapsedTime: number): void {
+        GameHelper.stopTimer();
+        GameHelper.showNewGameScreen();
         GameHelper.setTimer(elapsedTime!);
 
         Renderer.drawAffectedFields(affectedFields);

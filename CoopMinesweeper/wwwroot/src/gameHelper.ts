@@ -16,7 +16,7 @@ abstract class GameHelper {
     public static hideOverlay(): void {
         overlay.style.display = "none";
         overlayStatus.style.display = "none";
-        restartButton.style.display = "none";
+        newGameButton.style.display = "none";
 
         if (gameIdText) { // Host
             gameIdText.style.display = "none";
@@ -28,15 +28,15 @@ abstract class GameHelper {
         }
     }
 
-    public static showRestartScreen(): void {
+    public static showNewGameScreen(): void {
         overlay.style.display = "block";
-        restartButton.style.display = "inline-block";
+        newGameButton.style.display = "inline-block";
     }
 
     public static showEndGameScreen(): void {
         overlay.style.display = "block";
         endGameButton.style.display = "inline-block";
-        restartButton.style.display = "none";
+        newGameButton.style.display = "none";
         overlayStatus.style.display = "block";
         overlayStatus.innerText = "Other player has disconnected :/";
     }

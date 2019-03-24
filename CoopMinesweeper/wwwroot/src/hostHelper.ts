@@ -18,13 +18,18 @@ abstract class HostHelper {
 
         let affectedFields: Field[] = [];
         if (field.type === FieldType.Bomb) {
-            GameHelper.showRestartScreen();
-
             GameHelper.stopTimer();
+            GameHelper.showNewGameScreen();
             affectedFields = FieldHelper.getAllBombs();
             peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
         } else {
             FieldHelper.getFieldsForReveal(field, affectedFields);
+            revealedFields += affectedFields.length;
+            if (revealedFields === 381) {
+                GameHelper.stopTimer();
+                GameHelper.showNewGameScreen();
+                peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameWon, affectedFields, elapsedTime)));
+            }
             peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
         }
 
@@ -50,9 +55,9 @@ abstract class HostHelper {
         Renderer.drawAffectedFields(affectedFields);
     }
 
-    public static restartGame(): void {
+    public static startNewGame(): void {
         GameHelper.resetGame();
         gameStarted = false;
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Reset)));
+        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.NewGame)));
     }
 }

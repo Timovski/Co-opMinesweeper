@@ -13,6 +13,8 @@ let averageLatency: number;
 const baseSignalrUrl: string = location.host.indexOf("coopminesweeper.com") !== -1 ? "https://api.coopminesweeper.com" : "";
 const debugSimplePeer: boolean = false;
 
+let revealedFields: number = 0;
+
 // Html globals
 let gameCanvas: HTMLCanvasElement = document.getElementById("game-canvas") as HTMLCanvasElement;
 let gameCanvasContext: CanvasRenderingContext2D = gameCanvas.getContext("2d") as CanvasRenderingContext2D;
@@ -30,7 +32,7 @@ cursorImage.src = "cursor.png";
 const overlay: HTMLElement = document.getElementById("overlay") as HTMLElement;
 const overlayStatus: HTMLElement = document.getElementById("overlay-status") as HTMLElement;
 
-const restartButton: HTMLElement = document.getElementById("restart-button") as HTMLElement;
+const newGameButton: HTMLElement = document.getElementById("new-game-button") as HTMLElement;
 const endGameButton: HTMLElement = document.getElementById("end-game-button") as HTMLElement;
 
 const testLatencyButton: HTMLElement = document.getElementById("test-latency-button") as HTMLElement;
