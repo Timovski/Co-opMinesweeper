@@ -3,7 +3,7 @@
   <PropertyGroup>
     <TargetFramework>netcoreapp2.2</TargetFramework>
     <AspNetCoreHostingModel>InProcess</AspNetCoreHostingModel>
-    <TypeScriptToolsVersion>3.1</TypeScriptToolsVersion>
+    <TypeScriptToolsVersion>Latest</TypeScriptToolsVersion>
     <Version>0.0.2</Version>
     <Authors>Stefan Timovski</Authors>
     <PackageProjectUrl>https://github.com/Timovski/Co-opMinesweeper</PackageProjectUrl>

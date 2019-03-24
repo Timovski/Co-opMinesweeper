@@ -9,7 +9,12 @@ abstract class Helpers {
     }
 
     public static scrollIntoView(): void {
-        const screenWidth: number = Math.max(document.documentElement.clientWidth, window.innerWidth || 0);
+        let clientWidth: number = 0;
+        if (window.document.documentElement && window.document.documentElement.clientWidth) {
+            clientWidth = window.document.documentElement.clientWidth;
+        }
+
+        const screenWidth: number = Math.max(clientWidth, window.innerWidth || 0);
         if (screenWidth && screenWidth < 1162) {
             const position: number = 581 - (screenWidth / 2);
             scrollTo(position, 0);
