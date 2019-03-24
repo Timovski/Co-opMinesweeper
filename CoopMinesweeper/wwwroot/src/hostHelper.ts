@@ -58,6 +58,7 @@ abstract class HostHelper {
     public static startNewGame(): void {
         GameHelper.resetGame();
         gameStarted = false;
+        revealedFields = 0;
         peer.send(JSON.stringify(new ServerDataObject(ServerEventType.NewGame)));
     }
 }
