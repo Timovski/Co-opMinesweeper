@@ -31,10 +31,6 @@ body {
 
 /* #endregion */
 
-#header {
-    height: 40px;
-}
-
 #flags-container {
     display: inline-block;
 }
@@ -43,55 +39,61 @@ body {
     float: right;
 }
 
-#footer {
-    text-align: center;
-    margin-top: 20px;
-}
-
 /* #region Container */
 
-#left-container {
-    width: 50%;
-    float: left;
-    margin-right: -481px; /* minus half of the center container width */
-    margin-left: auto;
-}
-#left-container-content {
-    margin-right: 481px; /* half of the center container width */
-}
-#center-container {
-    width: 962px; /* size of the fixed width */
-    float: left;
-}
-#right-container {
-    width: 50%;
-    float: right;
-    margin-left: -481px; /* minus half of the center container width */
-}
-#right-container-content {
-    margin-left: 481px; /* half of the center container width */
+#main {
+    text-align: center;
 }
 
-#container:after {
-    content: "";
-    display: table;
-    clear: both;
+#main div {
+    text-align: left;
+}
+
+#content-holder {
+    width: 1162px; 
+    display: inline-block; 
+}
+
+#left-column, #right-column {
+    width: 100px; 
+    display: inline-block; 
+    vertical-align: top;
+}
+
+#middle-column {
+    width: 962px;
+    display: inline-block;
+    vertical-align: top;
+}
+
+#header {
+    height: 40px;
+}
+
+#canvas-holder {
+    height: 514px;
+    position: relative;
+}
+
+#footer {
+    text-align: center;
+    margin-top: 25px;
 }
 
 /* #endregion */
 
 /* #region Canvas */
 
-#game-canvas {
+#game-canvas, #mouse-canvas {
     width: 962px;
     height: 514px;
     position: absolute;
+}
+
+#game-canvas {
     z-index: 0;
 }
 #mouse-canvas {
-    width: 962px;
-    height: 514px;
-    position: absolute;
     z-index: 1;
 }
 
