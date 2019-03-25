@@ -29,8 +29,9 @@ abstract class HostHelper {
                 GameHelper.stopTimer();
                 GameHelper.showNewGameScreen();
                 peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameWon, affectedFields, elapsedTime)));
+            } else {
+                peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
             }
-            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
         }
 
         Renderer.drawAffectedFields(affectedFields);
