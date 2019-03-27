@@ -1,5 +1,10 @@
 body {
     margin: 0;
+    background-color: rgba(143, 188, 143, 1);
+}
+
+*:focus {
+    outline: none;
 }
 
 /* #region Overlay */
@@ -13,20 +18,35 @@ body {
     right: 0;
     bottom: 0;
     background-color: rgba(0, 0, 0, 0.5);
-    z-index: 2;
+    z-index: 3;
 }
   
 #center-div {
     position: absolute;
     top: 50%;
     left: 50%;
+    text-align: center;
     transform: translate(-50%,-50%);
     -ms-transform: translate(-50%,-50%);
     -webkit-transform: translate(-50%,-50%);
 }
 
 #game-id-text {
-    font-size: 60px;
+    font-size: 50px;
+    color: rgb(255, 255, 255);
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: 12px 12px 4px rgb(0, 0, 0);
+}
+
+#overlay-status {
+    color: rgb(255, 255, 255);
+    font-family: Arial, Helvetica, sans-serif;
+    text-shadow: 12px 12px 2px rgb(0, 0, 0);
+    margin-top: 7px;
+}
+
+#overlay input, #overlay button {
+    box-shadow: 10px 10px 10px rgb(0, 0, 0);
 }
 
 /* #endregion */
@@ -37,6 +57,12 @@ body {
 
 #timer-container {
     float: right;
+}
+
+#timer, #flags {
+    color: white;
+    font-family: Arial, Helvetica, sans-serif;
+    font-size: 36px;
 }
 
 /* #region Container */
@@ -73,6 +99,7 @@ body {
 #canvas-holder {
     height: 514px;
     position: relative;
+    background-color: rgb(59, 155, 102);
 }
 
 #footer {
@@ -84,7 +111,7 @@ body {
 
 /* #region Canvas */
 
-#game-canvas, #mouse-canvas {
+#game-canvas, #mouse-canvas, #other-mouse-canvas {
     width: 962px;
     height: 514px;
     position: absolute;
@@ -96,6 +123,9 @@ body {
 #mouse-canvas {
     z-index: 1;
 }
+#other-mouse-canvas {
+    z-index: 2;
+}
 
 /* #endregion */
 
@@ -104,6 +134,61 @@ body {
     margin-left: 4px;
     vertical-align: middle;
     padding-bottom: 3px;
+}
+
+#game-id-input {
+    padding: 12px 20px;
+    font-size: 23px;
+    border: 3px solid #4CAF50;
+    border-radius: 8px;
+    width: 54px;
+    vertical-align: middle;
+}
+
+/* #region Buttons */
+
+#button-holder {
+    width: 270px;
+    text-align: left;
+}
+
+.button {
+    margin: 4px 2px;
+    padding: 16px 32px;
+    text-align: center;
+    text-decoration: none;
+    display: inline-block;
+    font-size: 16px;
+    cursor: pointer;
+    border: 3px solid #4CAF50;
+    border-radius: 8px;
+    color: black;
+    background-color: white;
+    vertical-align: middle;
+    -webkit-transition-duration: 0.4s;
+    -ms-transition-duration: 0.4s;
+    -o-transition-duration: 0.4s;
+    transition-duration: 0.4s;
+}
+
+.button:hover {
+    background-color: rgba(59, 155, 102, 1);
+    color: white;
+}
+
+.button:active {
+    background-color: white;
+}
+
+.button.back-button {
+    margin: 8px 0px;
+    padding: 8px 16px;
+}
+
+/* #endregion Buttons */
+
+.right {
+    float: right;
 }
 
 .unselectable {

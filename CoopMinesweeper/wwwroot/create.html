@@ -10,8 +10,8 @@
 <body>
     <div id="overlay">
         <div id="center-div">
-            <button id="new-game-button" style="display: none;">New Game</button>
-            <button id="end-game-button" style="display: none;">End Game</button>
+            <button id="new-game-button" style="display: none;" class="button">New Game</button>
+            <button id="end-game-button" style="display: none;" class="button">End Game</button>
 
             <div id="game-id-text"></div>
 
@@ -26,7 +26,7 @@
     <div id="main">
         <div id="content-holder">
             <div id="left-column" class="unselectable">
-                <button onclick="window.location.href = '/index.html'">Back</button>
+                <button onclick="window.location.href = '/index.html'" class="button back-button">Back</button>
             </div><div id="middle-column">
                 <div id="header" class="unselectable">
                     <div id="flags-container">
@@ -39,6 +39,7 @@
                 <div id="canvas-holder">
                     <canvas id="game-canvas"></canvas>
                     <canvas id="mouse-canvas"></canvas>
+                    <canvas id="other-mouse-canvas"></canvas>
                 </div>
                 <div id="footer" class="unselectable">
                     Powered by: <a href="https://github.com/feross/simple-peer" target="_blank">simple-peer</a> |

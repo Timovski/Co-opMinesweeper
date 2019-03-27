@@ -1,3 +1,5 @@
+// #region Game properties
+
 let matrix: Field[][] = new Array<Field[]>(16);
 let previousActiveField: Field;
 
@@ -15,7 +17,10 @@ const debugSimplePeer: boolean = false;
 
 let revealedFields: number = 0;
 
-// Html globals
+// #endregion Game properties
+
+// #region Html globals
+
 let gameCanvas: HTMLCanvasElement = document.getElementById("game-canvas") as HTMLCanvasElement;
 let gameCanvasContext: CanvasRenderingContext2D = gameCanvas.getContext("2d") as CanvasRenderingContext2D;
 gameCanvas.width = gameCanvas.offsetWidth;
@@ -26,8 +31,19 @@ let mouseCanvasContext: CanvasRenderingContext2D = mouseCanvas.getContext("2d") 
 mouseCanvas.width = mouseCanvas.offsetWidth;
 mouseCanvas.height = mouseCanvas.offsetHeight;
 
+let otherMouseCanvas: HTMLCanvasElement = document.getElementById("other-mouse-canvas") as HTMLCanvasElement;
+let otherMouseCanvasContext: CanvasRenderingContext2D = otherMouseCanvas.getContext("2d") as CanvasRenderingContext2D;
+otherMouseCanvas.width = otherMouseCanvas.offsetWidth;
+otherMouseCanvas.height = otherMouseCanvas.offsetHeight;
+
 let cursorImage: HTMLImageElement = new Image();
 cursorImage.src = "cursor.png";
+
+let flagImage: HTMLImageElement = new Image();
+flagImage.src = "flag.png";
+
+let bombImage: HTMLImageElement = new Image();
+bombImage.src = "bomb.png";
 
 const overlay: HTMLElement = document.getElementById("overlay") as HTMLElement;
 const overlayStatus: HTMLElement = document.getElementById("overlay-status") as HTMLElement;
@@ -46,3 +62,5 @@ const gameIdText: HTMLElement = document.getElementById("game-id-text") as HTMLE
 // Client only
 const gameIdInput: HTMLInputElement = document.getElementById("game-id-input") as HTMLInputElement;
 const connectButton: HTMLElement = document.getElementById("connect-button") as HTMLElement;
+
+// #endregion Html globals

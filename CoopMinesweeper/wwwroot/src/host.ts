@@ -101,16 +101,16 @@ signalrConnection.onclose((error?: Error): void => {
 
 // #region Canvas Events
 
-mouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
-    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+otherMouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
+    const mousePosition: MousePosition = Helpers.getMousePosition(otherMouseCanvas, e);
     peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Move, mousePosition)));
 
     const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
     Renderer.renderMouseMove(field);
 });
 
-mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
-    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+otherMouseCanvas.addEventListener("click", (e: MouseEvent): void => {
+    const mousePosition: MousePosition = Helpers.getMousePosition(otherMouseCanvas, e);
     const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
 
     if (field.revealed || field.flag) {
@@ -120,9 +120,9 @@ mouseCanvas.addEventListener("click", (e: MouseEvent): void => {
     HostHelper.handleClick(field);
 });
 
-mouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
+otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
     e.preventDefault();
-    const mousePosition: MousePosition = Helpers.getMousePosition(mouseCanvas, e);
+    const mousePosition: MousePosition = Helpers.getMousePosition(otherMouseCanvas, e);
     const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
 
     if (field.revealed) {
