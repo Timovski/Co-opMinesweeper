@@ -32,7 +32,7 @@ peer.on("signal", (data: any): void => {
 
         signalrConnection.invoke("CreateGame").then((newGameId: string) => {
             gameIdText.innerText = `Game Id: ${newGameId}`;
-            overlayStatus.innerText = "Waiting for other player to join...";
+            overlayStatus.innerText = "Give the game id to the other player. Waiting for other player to join...";
         }).catch((err: any) => {
             // todo: implement
         });
