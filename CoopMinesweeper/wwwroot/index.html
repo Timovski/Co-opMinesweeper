@@ -8,7 +8,17 @@
 </head>
 
 <body>
-    <div id="center-div">
+    <div id="overlay" style="display: none;">
+        <div class="center-div">
+            <div id="overlay-status">
+                Unfortunately your browser doesn’t support WebRTC, which is required to run this game.<br>
+                Download the latest version of Mozilla Firefox, Google Chrome or any other browser you like and please
+                try again.
+            </div>
+        </div>
+    </div>
+
+    <div class="center-div">
         <div id="button-holder">
             <button onclick="window.location.href = '/create.html'" class="button">Create</button>
             <button onclick="window.location.href = '/join.html'" class="button right">Join</button>
@@ -22,6 +32,13 @@
             </a>
         </div>
     </div>
+
+    <script>
+        if (!window.RTCPeerConnection && !window.mozRTCPeerConnection && !window.webkitRTCPeerConnection) {
+            let overlay = document.getElementById("overlay");
+            overlay.style.display = "block"
+        }
+    </script>
 </body>
 
 </html>

@@ -21,7 +21,7 @@ body {
     z-index: 3;
 }
   
-#center-div {
+.center-div {
     position: absolute;
     top: 50%;
     left: 50%;
@@ -49,7 +49,7 @@ body {
     box-shadow: 10px 10px 10px rgb(0, 0, 0);
 }
 
-/* #endregion */
+/* #endregion Overlay */
 
 #flags-container {
     display: inline-block;
@@ -107,7 +107,7 @@ body {
     margin-top: 25px;
 }
 
-/* #endregion */
+/* #endregion Container */
 
 /* #region Canvas */
 
@@ -127,7 +127,7 @@ body {
     z-index: 2;
 }
 
-/* #endregion */
+/* #endregion Canvas */
 
 .github-logo {
     height: 16px;
