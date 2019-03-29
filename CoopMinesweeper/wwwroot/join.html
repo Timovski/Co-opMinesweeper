@@ -1,8 +1,10 @@
-<!DOCTYPE html>
-<html>
+﻿<!DOCTYPE html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" content="Join an existing co-op Minesweeper game.">
     <title>Co-op Minesweeper</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -16,7 +18,7 @@
             <input type="text" id="game-id-input" maxlength="4" autofocus>
             <button id="connect-button" class="button">Connect</button>
 
-            <div id="overlay-status"></div>
+            <label for="game-id-input" id="overlay-status"></label>
         </div>
     </div>
 
@@ -24,34 +26,37 @@
         <button id="test-latency-button" style="display: none;">Test Latency</button>
     </div>
 
-    <div id="main">
-        <div id="content-holder">
-            <div id="left-column" class="unselectable">
-                <button onclick="window.location.href = '/index.html'" class="button back-button">Back</button>
-            </div><div id="middle-column">
-                <div id="header" class="unselectable">
-                    <div id="flags-container">
-                        <span id="flags">99</span>
+    <main>
+        <div id="main">
+            <div id="content-holder">
+                <div id="left-column" class="unselectable">
+                    <button onclick="window.location.href = '/index.html'" class="button back-button">Back</button>
+                </div><div id="middle-column">
+                    <div id="header" class="unselectable">
+                        <div id="flags-container">
+                            <span id="flags">99</span>
+                        </div>
+                        <div id="timer-container">
+                            <span id="timer">000</span>
+                        </div>
                     </div>
-                    <div id="timer-container">
-                        <span id="timer">000</span>
+                    <div id="canvas-holder">
+                        <canvas id="game-canvas"></canvas>
+                        <canvas id="mouse-canvas"></canvas>
+                        <canvas id="other-mouse-canvas"></canvas>
                     </div>
-                </div>
-                <div id="canvas-holder">
-                    <canvas id="game-canvas"></canvas>
-                    <canvas id="mouse-canvas"></canvas>
-                    <canvas id="other-mouse-canvas"></canvas>
-                </div>
-                <div id="footer" class="unselectable">
-                    Powered by: <a href="https://github.com/feross/simple-peer" target="_blank">simple-peer</a> |
-                    <a href="https://github.com/Timovski/Co-opMinesweeper" target="_blank">
-                        <span>GitHub</span>
-                        <img src="GitHub-Mark-32px.png" class="github-logo" />
-                    </a>
-                </div>
-            </div><div id="right-column"></div>
+                    <div id="footer" class="unselectable">
+                        Powered by: <a href="https://github.com/feross/simple-peer" target="_blank"
+                            rel="noopener">simple-peer</a> |
+                        <a href="https://github.com/Timovski/Co-opMinesweeper" target="_blank" rel="noopener">
+                            <span>GitHub</span>
+                            <img alt="github logo" src="GitHub-Mark-32px.png" class="github-logo" />
+                        </a>
+                    </div>
+                </div><div id="right-column"></div>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script src="simplepeer.min.js"></script>
     <script src="signalr.min.js"></script>

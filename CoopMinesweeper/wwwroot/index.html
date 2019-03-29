@@ -1,8 +1,10 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 
 <head>
     <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1">
+    <meta name="Description" content="A co-op Minesweeper variant.">
     <title>Co-op Minesweeper</title>
     <link rel="stylesheet" type="text/css" href="style.css">
 </head>
@@ -18,20 +20,23 @@
         </div>
     </div>
 
-    <div class="center-div">
-        <div id="button-holder">
-            <button onclick="window.location.href = '/create.html'" class="button">Create</button>
-            <button onclick="window.location.href = '/join.html'" class="button right">Join</button>
-        </div>
+    <main>
+        <div class="center-div">
+            <div id="button-holder">
+                <button onclick="window.location.href = '/create.html'" class="button">Create</button>
+                <button onclick="window.location.href = '/join.html'" class="button right">Join</button>
+            </div>
 
-        <div id="footer">
-            Powered by: <a href="https://github.com/feross/simple-peer" target="_blank">simple-peer</a> |
-            <a href="https://github.com/Timovski/Co-opMinesweeper" target="_blank">
-                <span>GitHub</span>
-                <img src="GitHub-Mark-32px.png" class="github-logo" />
-            </a>
+            <div id="footer">
+                Powered by: <a href="https://github.com/feross/simple-peer" target="_blank"
+                    rel="noopener">simple-peer</a> |
+                <a href="https://github.com/Timovski/Co-opMinesweeper" target="_blank" rel="noopener">
+                    <span>GitHub</span>
+                    <img alt="github logo" src="GitHub-Mark-32px.png" class="github-logo" />
+                </a>
+            </div>
         </div>
-    </div>
+    </main>
 
     <script>
         if (!window.RTCPeerConnection && !window.mozRTCPeerConnection && !window.webkitRTCPeerConnection) {
