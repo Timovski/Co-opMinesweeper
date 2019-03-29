@@ -21,6 +21,18 @@ abstract class Helpers {
         }
     }
 
+    public static copyToClipboard(str: string): void {
+        const el: HTMLTextAreaElement = document.createElement("textarea");
+        el.value = str;
+        el.setAttribute("readonly", "");
+        el.style.position = "absolute";
+        el.style.left = "-9999px";
+        document.body.appendChild(el);
+        el.select();
+        document.execCommand("copy");
+        document.body.removeChild(el);
+    }
+
     public static processLatency(stamp: number): void {
         const t0: number = latencyTestStamps[stamp];
         const t1: number = performance.now();

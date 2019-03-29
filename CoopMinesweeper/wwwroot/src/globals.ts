@@ -58,6 +58,7 @@ let timerElement: HTMLElement = document.getElementById("timer") as HTMLElement;
 
 // Host only
 const gameIdText: HTMLElement = document.getElementById("game-id-text") as HTMLElement;
+const copyToClipboardButton: HTMLButtonElement = document.getElementById("copy-to-clipboard-button") as HTMLButtonElement;
 
 // Client only
 const gameIdInput: HTMLInputElement = document.getElementById("game-id-input") as HTMLInputElement;

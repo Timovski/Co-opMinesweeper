@@ -17,6 +17,7 @@ if (debugSimplePeer) {
 
 let hostSignal: string;
 let gameStarted: boolean = false;
+let newGameId: string;
 
 overlayStatus.innerText = "Waiting for signal...";
 
@@ -30,9 +31,11 @@ peer.on("signal", (data: any): void => {
     signalrConnection.start().then(() => {
         overlayStatus.innerText = "Connected to server successfully, creating game...";
 
-        signalrConnection.invoke("CreateGame").then((newGameId: string) => {
-            gameIdText.innerText = `Game Id: ${newGameId}`;
+        signalrConnection.invoke("CreateGame").then((gameId: string) => {
+            newGameId = gameId;
+            gameIdText.innerText = `Game Id: ${gameId}`;
             overlayStatus.innerText = "Give the game id to the other player. Waiting for other player to join...";
+            copyToClipboardButton.style.display = "inline-block";
         }).catch((err: any) => {
             // todo: implement
         });
@@ -142,6 +145,12 @@ newGameButton.addEventListener("click", (): void => {
 
 endGameButton.addEventListener("click", (): void => {
     window.location.href = "/index.html";
+});
+
+copyToClipboardButton.addEventListener("click", (): void => {
+    Helpers.copyToClipboard(newGameId);
+    copyToClipboardButton.innerText = "Copied";
+    copyToClipboardButton.disabled = true;
 });
 
 testLatencyButton.addEventListener("click", (): void => {
