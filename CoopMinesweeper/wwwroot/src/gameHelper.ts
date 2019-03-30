@@ -20,6 +20,7 @@ abstract class GameHelper {
 
         if (gameIdText) { // Host
             gameIdText.style.display = "none";
+            copyToClipboardButton.style.display = "none";
         }
 
         if (gameIdInput) { // Client

@@ -48,10 +48,10 @@ bombImage.src = "bomb.png";
 const overlay: HTMLElement = document.getElementById("overlay") as HTMLElement;
 const overlayStatus: HTMLElement = document.getElementById("overlay-status") as HTMLElement;
 
-const newGameButton: HTMLElement = document.getElementById("new-game-button") as HTMLElement;
-const endGameButton: HTMLElement = document.getElementById("end-game-button") as HTMLElement;
+const newGameButton: HTMLButtonElement = document.getElementById("new-game-button") as HTMLButtonElement;
+const endGameButton: HTMLButtonElement = document.getElementById("end-game-button") as HTMLButtonElement;
 
-const testLatencyButton: HTMLElement = document.getElementById("test-latency-button") as HTMLElement;
+const testLatencyButton: HTMLButtonElement = document.getElementById("test-latency-button") as HTMLButtonElement;
 
 let flagsElement: HTMLElement = document.getElementById("flags") as HTMLElement;
 let timerElement: HTMLElement = document.getElementById("timer") as HTMLElement;
@@ -62,6 +62,6 @@ const copyToClipboardButton: HTMLButtonElement = document.getElementById("copy-t
 
 // Client only
 const gameIdInput: HTMLInputElement = document.getElementById("game-id-input") as HTMLInputElement;
-const connectButton: HTMLElement = document.getElementById("connect-button") as HTMLElement;
+const connectButton: HTMLButtonElement = document.getElementById("connect-button") as HTMLButtonElement;
 
 // #endregion Html globals
