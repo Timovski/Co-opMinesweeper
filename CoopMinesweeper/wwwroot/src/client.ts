@@ -133,8 +133,14 @@ const getHostSignal: () => void = (): void => {
     }
 
     if (connected) {
-        clientSignalrConnection.invoke("GetHostSignal", gameIdInput.value).then((sadsa: any) => {
-            overlayStatus.innerText = "No game found for the provided game id…";
+        overlayStatus.innerText = "Looking for games for the provided game id...";
+
+        clientSignalrConnection.invoke("GetHostSignal", gameIdInput.value).then((gameFound: boolean) => {
+            if (gameFound) {
+                overlayStatus.innerText = "Game found, establishing connection with other player...";
+            } else {
+                overlayStatus.innerText = "No game found for the provided game id...";
+            }
         }).catch((err: any) => {
             // todo: implement
         });
