@@ -11,7 +11,7 @@
     <RepositoryUrl>https://github.com/Timovski/Co-opMinesweeper</RepositoryUrl>
     <RepositoryType>git</RepositoryType>
     <Description>A 2-player cooperative browser-based variant of the game Minesweeper.</Description>
-    <PackageTags>browser;cooperative;gane</PackageTags>
+    <PackageTags>browser;cooperative;game</PackageTags>
   </PropertyGroup>
 
   <ItemGroup>
