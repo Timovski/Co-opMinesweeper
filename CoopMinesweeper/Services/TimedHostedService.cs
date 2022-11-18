@@ -3,39 +3,47 @@ using System;
 using System.Threading;
 using System.Threading.Tasks;
 
-namespace CoopMinesweeper.Services
+namespace CoopMinesweeper.Services;
+
+public class TimedHostedService : IHostedService, IDisposable
 {
-    public class TimedHostedService : IHostedService, IDisposable
+    private Timer _timer;
+
+    private readonly IGameService _gameService;
+
+    public TimedHostedService(IGameService gameService)
     {
-        private Timer _timer;
+        _gameService = gameService;
+    }
 
-        private readonly IGameService _gameService;
+    public Task StartAsync(CancellationToken cancellationToken)
+    {
+        _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
+        return Task.CompletedTask;
+    }
 
-        public TimedHostedService(IGameService gameService)
-        {
-            _gameService = gameService;
-        }
+    private void DoWork(object state)
+    {
+        _gameService.RemoveOldGames();
+    }
 
-        public Task StartAsync(CancellationToken cancellationToken)
-        {
-            _timer = new Timer(DoWork, null, TimeSpan.Zero, TimeSpan.FromMinutes(5));
-            return Task.CompletedTask;
-        }
+    public Task StopAsync(CancellationToken cancellationToken)
+    {
+        _timer?.Change(Timeout.Infinite, 0);
+        return Task.CompletedTask;
+    }
 
-        private void DoWork(object state)
-        {
-            _gameService.RemoveOldGames();
-        }
-
-        public Task StopAsync(CancellationToken cancellationToken)
-        {
-            _timer?.Change(Timeout.Infinite, 0);
-            return Task.CompletedTask;
-        }
-
-        public void Dispose()
+    protected virtual void Dispose(bool disposing)
+    {
+        if (disposing)
         {
             _timer?.Dispose();
         }
+    }
+
+    public void Dispose()
+    {
+        Dispose(true);
+        GC.SuppressFinalize(this);
     }
 }
