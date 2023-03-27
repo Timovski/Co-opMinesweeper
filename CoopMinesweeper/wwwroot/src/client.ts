@@ -2,7 +2,7 @@ Renderer.drawBackground();
 FieldHelper.initializeFields();
 Helpers.scrollIntoView();
 
-let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false });
+let clientPeer: SimplePeer = new SimplePeer({ initiator: false, trickle: false, config: { iceServers: [{ urls: 'stun:stun.l.google.com:19302' }, { urls: 'stun:global.stun.twilio.com:3478' }] } });
 let clientSignalrConnection: signalR = new signalR.HubConnectionBuilder().withUrl(baseSignalrUrl + "/gameHub", { logger: signalR.LogLevel.None }).build();
 clientSignalrConnection.serverTimeoutInMilliseconds = 300000; // 5 minutes
 
