@@ -46,14 +46,16 @@ class ClientDataObject {
     public mousePosition!: MousePosition;
     public stamp!: number;
     public clientEventType: ClientEventType;
+    public playerId?: number;
 
     constructor(clientEventType: ClientEventType.NewGame);
-    constructor(clientEventType: ClientEventType.Move | ClientEventType.Click | ClientEventType.Flag, mousePosition: MousePosition);
+    constructor(clientEventType: ClientEventType.Move | ClientEventType.Click | ClientEventType.Flag, mousePosition: MousePosition, playerId: number);
     constructor(clientEventType: ClientEventType.LatencyTest | ClientEventType.LatencyResponse, stamp: number);
-    constructor(clientEventType: ClientEventType, arg?: MousePosition | number) {
+    constructor(clientEventType: ClientEventType, arg?: MousePosition | number, playerId?: number) {
         if (arg) {
             if (arg instanceof MousePosition) {
                 this.mousePosition = arg;
+                this.playerId = playerId;
             } else {
                 this.stamp = arg;
             }
@@ -79,9 +81,10 @@ class ServerDataObject {
     public flagsLeft!: number | undefined;
     public elapsedTime!: number | undefined;
     public serverEventType: ServerEventType;
+    public playerId?: number;
 
     constructor(serverEventType: ServerEventType.NewGame);
-    constructor(serverEventType: ServerEventType.Move, mousePosition: MousePosition);
+    constructor(serverEventType: ServerEventType.Move, mousePosition: MousePosition, playerId: number);
     constructor(serverEventType: ServerEventType.LatencyTest | ServerEventType.LatencyResponse, stamp: number);
     constructor(serverEventType: ServerEventType.Game, affectedFields: Field[], flagsLeft?: number);
     constructor(serverEventType: ServerEventType.GameWon, affectedFields: Field[], elapsedTime: number);
@@ -90,6 +93,7 @@ class ServerDataObject {
         if (arg) {
             if (arg instanceof MousePosition) {
                 this.mousePosition = arg;
+                this.playerId = arg2;
             } else if (typeof arg === "number") {
                 this.stamp = arg;
             } else { // Game

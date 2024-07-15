@@ -21,16 +21,22 @@ abstract class HostHelper {
             GameHelper.stopTimer();
             GameHelper.showNewGameScreen();
             affectedFields = FieldHelper.getAllBombs();
-            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
+            peers.forEach((peer: SimplePeer) => {
+                peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameOver, affectedFields, elapsedTime)));
+            });
         } else {
             FieldHelper.getFieldsForReveal(field, affectedFields);
             revealedFields += affectedFields.length;
             if (revealedFields === 381) {
                 GameHelper.stopTimer();
                 GameHelper.showNewGameScreen();
-                peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameWon, affectedFields, elapsedTime)));
+                peers.forEach((peer: SimplePeer) => {
+                    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.GameWon, affectedFields, elapsedTime)));
+                });
             } else {
-                peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
+                peers.forEach((peer: SimplePeer) => {
+                    peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields)));
+                });
             }
         }
 
@@ -52,7 +58,9 @@ abstract class HostHelper {
         field.flag = !field.flag;
 
         const affectedFields: Field[] = [field];
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields, flagsLeft)));
+        peers.forEach((peer: SimplePeer) => {
+            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.Game, affectedFields, flagsLeft)));
+        });
         Renderer.drawAffectedFields(affectedFields);
     }
 
@@ -60,6 +68,8 @@ abstract class HostHelper {
         GameHelper.resetGame();
         gameStarted = false;
         revealedFields = 0;
-        peer.send(JSON.stringify(new ServerDataObject(ServerEventType.NewGame)));
+        peers.forEach((peer: SimplePeer) => {
+            peer.send(JSON.stringify(new ServerDataObject(ServerEventType.NewGame)));
+        });
     }
 }

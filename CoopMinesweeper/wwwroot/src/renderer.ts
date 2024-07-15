@@ -73,13 +73,20 @@ abstract class Renderer {
         gameCanvasContext.fillRect(field.startX, field.startY, 30, 30);
     }
 
-    public static drawMouse(position: MousePosition): void {
+    private static positions: { [key: number]: MousePosition } = {};
+
+    public static drawMouse(position: MousePosition, otherPlayerId: number): void {
         otherMouseCanvasContext.clearRect(0, 0, otherMouseCanvas.width, otherMouseCanvas.height);
 
-        const field: Field = FieldHelper.getField(position.x, position.y);
-        otherMouseCanvasContext.fillStyle = "rgba(255, 255, 255, 0.5)";
-        otherMouseCanvasContext.fillRect(field.startX, field.startY, 30, 30);
+        this.positions[otherPlayerId] = position;
+        
+        for (let key in this.positions) {
+            const position: MousePosition = this.positions[key];
+            const field: Field = FieldHelper.getField(position.x, position.y);
+            otherMouseCanvasContext.fillStyle = "rgba(255, 255, 255, 0.5)";
+            otherMouseCanvasContext.fillRect(field.startX, field.startY, 30, 30);
 
-        otherMouseCanvasContext.drawImage(cursorImage, position.x, position.y);
+            otherMouseCanvasContext.drawImage(cursorImage, position.x, position.y);
+        }
     }
 }

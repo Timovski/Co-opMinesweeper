@@ -17,6 +17,8 @@ const debugSimplePeer: boolean = false;
 
 let revealedFields: number = 0;
 
+const playerId = Math.floor(Math.random() * 10000);
+
 // #endregion Game properties
 
 // #region Html globals

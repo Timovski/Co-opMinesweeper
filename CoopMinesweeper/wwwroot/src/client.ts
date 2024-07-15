@@ -42,7 +42,7 @@ clientPeer.on("data", (data: any): void => {
     } else if (serverDataObject.serverEventType === ServerEventType.LatencyResponse) {
         Helpers.processLatency(serverDataObject.stamp);
     } else if (serverDataObject.serverEventType === ServerEventType.Move) {
-        Renderer.drawMouse(serverDataObject.mousePosition);
+        Renderer.drawMouse(serverDataObject.mousePosition, serverDataObject.playerId!);
     } else if (serverDataObject.serverEventType === ServerEventType.Game) {
         ClientHelper.handleGame(serverDataObject.affectedFields, serverDataObject.flagsLeft);
     } else if (serverDataObject.serverEventType === ServerEventType.GameWon) {
@@ -92,7 +92,7 @@ clientSignalrConnection.onclose((error?: Error): void => {
 
 otherMouseCanvas.addEventListener("mousemove", (e: MouseEvent): void => {
     const mousePosition: MousePosition = Helpers.getMousePosition(otherMouseCanvas, e);
-    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Move, mousePosition)));
+    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Move, mousePosition, playerId)));
 
     const field: Field = FieldHelper.getField(mousePosition.x, mousePosition.y);
     Renderer.renderMouseMove(field);
@@ -106,7 +106,7 @@ otherMouseCanvas.addEventListener("click", (e: MouseEvent): void => {
         return;
     }
 
-    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Click, mousePosition)));
+    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Click, mousePosition, playerId)));
 });
 
 otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
@@ -118,7 +118,7 @@ otherMouseCanvas.addEventListener("contextmenu", (e: MouseEvent): void => {
         return;
     }
 
-    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Flag, mousePosition)));
+    clientPeer.send(JSON.stringify(new ClientDataObject(ClientEventType.Flag, mousePosition, playerId)));
 });
 
 // #endregion
